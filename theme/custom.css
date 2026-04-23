@@ -29,6 +29,13 @@ pre code {
     font-size: 0.9em;
 }
 
+/* Mermaid diagrams (client-rendered from ```mermaid fences) */
+.mermaid {
+    margin: 1.25em 0;
+    overflow-x: auto;
+    text-align: center;
+}
+
 /* Language switcher — floating top-right button */
 #language-switcher {
     position: fixed;

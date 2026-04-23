@@ -18,7 +18,7 @@ git-repository-icon = "fa-github"
 edit-url-template = "https://github.com/A7um/ParallelDevelopmentBook/edit/main/{path}"
 site-url = "/ParallelDevelopmentBook/"
 additional-css = ["theme/custom.css"]
-additional-js = ["theme/language-switcher.js"]
+additional-js = ["theme/language-switcher.js", "theme/mermaid-init.js"]
 
 [output.html.fold]
 enable = true

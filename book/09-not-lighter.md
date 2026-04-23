@@ -35,6 +35,14 @@ Now compare a Phase 4 parallel day. You spend almost no time on the semi-automat
 
 > **You've gone from a mix of typing and thinking to pure thinking. The throughput is higher. The fatigue is also higher.**
 
+```mermaid
+%%{init: {'theme':'neutral'}}%%
+pie showData
+  title Rough hours shift (Phase 4 day, illustrative)
+  "Judgment / decisions" : 5
+  "Typing / routine execution" : 1
+```
+
 ## Why throughput goes up but feeling of relief doesn't
 
 A rough accounting of the change in a typical day:

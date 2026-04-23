@@ -42,7 +42,7 @@ jobs:
         run: python3 scripts/optimize-book.py
         env:
           BOOK_DIR: _book/zh
-          SW_CACHE_VERSION: paralleldevelopmentbook-zh-v1
+          SW_CACHE_VERSION: paralleldevelopmentbook-zh-v2
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

@@ -35,6 +35,14 @@ Simon Willison [blogmarks](https://simonwillison.net/dashboard/blogmarks-that-us
 
 > **你从"一点体力 + 一点脑力"变成了纯脑力。吞吐更高。疲倦也更高。**
 
+```mermaid
+%%{init: {'theme':'neutral'}}%%
+pie showData
+  title 粗略时间占比变化（第四阶段典型一天，示意）
+  "判断 / 决策" : 5
+  "敲字 / 常规执行" : 1
+```
+
 ## 为什么吞吐上而"放松感"不上
 
 粗略算一算典型一天的变化：

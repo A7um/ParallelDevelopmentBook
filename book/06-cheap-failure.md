@@ -27,6 +27,23 @@ This sounds expensive in agent cost. It is. It is radically cheaper in *your* co
 - The other two give you a cheap comparison — you see three design choices for the same contract, and you can tell which feels cleanest in thirty seconds.
 - If all three fail, you've learned something real about the requirement that one attempt would have hidden.
 
+```mermaid
+flowchart LR
+  subgraph once["Align once"]
+    SP[Spec]
+    TP[Test plan]
+  end
+  SP --> W1[Worktree / attempt 1]
+  SP --> W2[Worktree / attempt 2]
+  SP --> W3[Worktree / attempt 3]
+  TP --> W1
+  TP --> W2
+  TP --> W3
+  W1 --> P[Pick winner vs contract]
+  W2 --> P
+  W3 --> P
+```
+
 Best-of-N is especially useful for:
 
 - **Ambiguous architectural choices.** When you don't know the right abstraction, let three attempts show you.

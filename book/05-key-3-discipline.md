@@ -53,6 +53,16 @@ The skills that actually move the quality needle are the ones that encode the mi
 
 With skills in place, the work an agent does on a feature looks like this:
 
+```mermaid
+flowchart TB
+  SK[(Skills + AGENTS.md)]
+  SK --> D[1 · Architecture design]
+  D --> V[2 · Implementation + verification]
+  V --> U[3 · Self-audit vs skills]
+  SK --> V
+  SK --> U
+```
+
 1. **Architecture design.** Given requirement spec (Ch 3) and test plan (Ch 4), the agent proposes module boundaries, interfaces, file organization, and abstractions. It does this with skills loaded — so the design already reflects the deep-modules, information-hiding, naming-consistency rules. The human reviews this design at complexity-triaged depth. Getting this step right is what makes Chapter 7's mode 4 (agent-internal parallelism) possible at all, because the interface contracts defined here are what let sub-agents work in parallel without colliding.
 2. **Implementation and verification.** The agent writes code and tests, runs the suite, debugs failures, iterates to green (Chapter 4).
 3. **Self-audit.** Before declaring done, the agent re-reads its own diff with the skill set loaded and checks for violations: shallow modules, redundant layers, inconsistent naming, utilities that duplicate existing ones. It fixes what it finds.

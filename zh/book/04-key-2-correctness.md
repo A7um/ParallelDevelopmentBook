@@ -44,6 +44,20 @@ TPD 不是在"智识实践"意义上替代 TDD。它是针对"实现会被某种
 
 （TPD 这个名字是为了和 TDD 对照起的一个方便叫法。业界不是标准术语。别为它吵架。）
 
+```mermaid
+sequenceDiagram
+  participant H as 人
+  participant S as Spec
+  participant TP as 测试计划
+  participant A as Agent
+  participant CI as 套件 / CI
+  H->>S: 对齐需求（第 3 章）
+  H->>TP: 审查计划（契约）
+  TP->>A: 按 plan 写实现与测试
+  A->>CI: 跑到绿
+  CI-->>H: 仅在计划缺口或红套件时需要你
+```
+
 ## 2026 年正确性共识：Adversarial Agent Pattern
 
 "把正确性当契约"的当前最干净实践是 **Adversarial Agent Pattern**（对抗式 Agent 模式），在 [Augment Code Spec-Driven Development 指南（2026 年 4 月）](https://www.augmentcode.com/guides/what-is-spec-driven-development) 里有最清楚的定义。它把一些 2025 年实践者临场在做的事固化下来，并且——因为它把**验证**角色交给一个上下文不同、通常模型也不同的**独立** Agent——直接处理了本章稍后会讲到的盲点问题。

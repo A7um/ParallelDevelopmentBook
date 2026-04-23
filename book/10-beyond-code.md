@@ -29,6 +29,14 @@ The three keys translate directly:
 - **Correctness as contract** → build the methodological checklist *before* the analysis. Let the agent run it and report failures.
 - **Discipline as code** → encode data-team conventions (how notebooks are structured, where intermediate outputs live, how units and provenance are documented) as skills.
 
+```mermaid
+flowchart TB
+  D[Decomposable knowledge task]
+  D --> Q1{Checks for correctness<br/>can be specified?}
+  Q1 -->|Strong| K[Three keys + parallel patterns apply]
+  Q1 -->|Weak / subjective| H[Human-heavy verification<br/>narrow parallel surface]
+```
+
 This isn't speculative. Teams are doing it. The break-in period looks familiar: Phase 1 chaos, Phase 2 awareness, Phase 3 templates, Phase 4 leverage. Same curve.
 
 ## Other domains where the loop is closing

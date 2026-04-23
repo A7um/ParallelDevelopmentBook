@@ -70,6 +70,20 @@ TPD is not a replacement for TDD as an intellectual practice. It's a different s
 
 (The name "TPD" is a convenience coined to contrast with TDD. It isn't a term of art in the wider industry. Don't fight about the label.)
 
+```mermaid
+sequenceDiagram
+  participant H as Human
+  participant S as Spec
+  participant TP as Test plan
+  participant A as Agent
+  participant CI as Suite / CI
+  H->>S: Alignment (Ch. 3)
+  H->>TP: Review plan (contract)
+  TP->>A: Implement + tests vs plan
+  A->>CI: Run until green
+  CI-->>H: Signal only on plan gaps or red suite
+```
+
 ## What pioneers are already doing (last six months)
 
 Current practice — pinned explicitly to the November 2025 through April 2026 window:

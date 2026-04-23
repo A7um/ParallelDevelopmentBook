@@ -128,6 +128,13 @@ Write the spec to a file — the community has largely unified on `docs/plans/<f
 
 **Phase 4 — Commit.** Structured PR (see the `end-of-task-report` skill in Chapter 8) referencing the plan file.
 
+```mermaid
+flowchart LR
+  E["1 · Explore<br/>read-only recon"] --> P["2 · Plan<br/>spec + implementation plan"]
+  P --> I["3 · Implement<br/>sub-tasks vs verification criteria"]
+  I --> C["4 · Commit<br/>PR + plan reference"]
+```
+
 ### The "one-sentence rule"
 
 A useful micro-practice from the [Plan Mode guide](https://codewithmukesh.com/blog/plan-mode-claude-code/): **if you can describe the required diff in one sentence, skip the plan. Otherwise, Plan Mode is mandatory.** That rule sets a clean cutoff between "alignment is overhead" and "alignment is the work." It's the practical answer to the critique that spec-first is too heavy for small changes.

@@ -25,7 +25,7 @@ import tomllib
 from pathlib import Path
 
 BOOK_DIR = Path(os.environ.get("BOOK_DIR", "_book"))
-SW_CACHE_VERSION = os.environ.get("SW_CACHE_VERSION", "paralleldevelopmentbook-v1")
+SW_CACHE_VERSION = os.environ.get("SW_CACHE_VERSION", "paralleldevelopmentbook-v2")
 MARKER = "<!-- optimize-book:injected -->"
 
 PREFETCH_TEMPLATE = '<link rel="prefetch" href="{href}" as="document">'
@@ -267,10 +267,19 @@ def generate_service_worker(book_root: Path, pages: list[Path]) -> None:
         "clipboard.min.js",
         "elasticlunr.min.js",
         "mark.min.js",
+        "theme/mermaid-init.js",
     ]
     for extra in extras:
         if (book_root / extra).exists():
             precache.append(f"./{extra}")
+
+    # Chinese edition HTML references shared theme at `_book/theme/` via `../theme/`.
+    if book_root.name == "zh":
+        shared_theme = book_root.parent / "theme"
+        for name in ("custom.css", "language-switcher.js", "mermaid-init.js"):
+            p = shared_theme / name
+            if p.is_file():
+                precache.append(f"../theme/{name}")
 
     assets_dir = book_root / "assets"
     if assets_dir.is_dir():
