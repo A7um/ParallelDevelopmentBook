@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="200" viewBox="0 0 700 200" role="img" aria-labelledby="t6 d6">
+  <title id="t6">Parallel execution then digest layer</title>
+  <desc id="d6">Many agents to triage agent to human decisions</desc>
+  <style>
+    .ag{fill:#e3f2fd;stroke:#1565c0;rx:8;font:12px ui-sans-serif,sans-serif}
+    .tr{fill:#fff3e0;stroke:#e65100;rx:10;font:13px ui-sans-serif,sans-serif;font-weight:600}
+    .hu{fill:#f3e5f5;stroke:#7b1fa2;rx:10}
+  </style>
+  <text x="350" y="26" text-anchor="middle" style="font:14px ui-sans-serif,sans-serif;font-weight:600;fill:#333">After parallel execution: volume becomes the next bottleneck</text>
+  <rect class="ag" x="30" y="55" width="95" height="44"/><text x="77" y="82" text-anchor="middle" fill="#222">Agent 1</text>
+  <rect class="ag" x="135" y="55" width="95" height="44"/><text x="182" y="82" text-anchor="middle" fill="#222">Agent 2</text>
+  <rect class="ag" x="240" y="55" width="95" height="44"/><text x="287" y="82" text-anchor="middle" fill="#222">Agent 3</text>
+  <rect class="ag" x="345" y="55" width="95" height="44"/><text x="392" y="82" text-anchor="middle" fill="#222">Agent 4</text>
+  <text x="485" y="82" style="font:18px ui-sans-serif,sans-serif;fill:#666">&</text>
+  <path d="M 77 102 L 77 118 L 350 118 L 350 132" stroke="#888" stroke-width="1.5" fill="none"/>
+  <path d="M 182 102 L 182 125 L 350 125" stroke="#888" stroke-width="1.5" fill="none"/>
+  <path d="M 287 102 L 287 125 L 350 125" stroke="#888" stroke-width="1.5" fill="none"/>
+  <path d="M 392 102 L 392 118 L 350 118" stroke="#888" stroke-width="1.5" fill="none"/>
+  <rect class="tr" x="270" y="138" width="160" height="48"/>
+  <text x="350" y="168" text-anchor="middle" fill="#222">Triage agent</text>
+  <path d="M 430 162 L 500 162" stroke="#666" stroke-width="2" marker-end="url(#a6)"/>
+  <rect class="hu" x="508" y="138" width="165" height="48"/>
+  <text x="590" y="168" text-anchor="middle" fill="#222" font-weight="600">You · decisions only</text>
+  <text x="350" y="192" text-anchor="middle" style="font:11px ui-sans-serif,sans-serif;fill:#666">Structured reports from workers make triage cheap (Ch. 8)</text>
+  <defs>
+    <marker id="a6" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L6,3 z" fill="#666"/>
+    </marker>
+  </defs>
+</svg>

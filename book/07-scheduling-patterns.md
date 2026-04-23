@@ -17,6 +17,8 @@ Four modes, from coarsest to finest:
 | 3 | Within one feature, across transaction types | Medium | Phase 3+ |
 | 4 | Within one task, across sub-agents | High setup, low runtime | Phase 3–4, mostly experimental |
 
+![Diagram: four scheduling modes from cross-project down to agent-internal parallelism](assets/parallel-modes.svg)
+
 You will use multiple modes at the same time. A Phase 4 engineer in a busy week might be running mode 1 across three projects, mode 2 inside one of those projects, and mode 3 inside one of those features. That's six agents in flight without even reaching for mode 4.
 
 ## Mode 1: Cross-project parallelism

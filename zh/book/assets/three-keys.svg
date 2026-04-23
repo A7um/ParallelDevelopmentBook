@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="260" viewBox="0 0 720 260" role="img" aria-labelledby="t3 d3">
+  <title id="t3">Three keys unlock three chokepoints</title>
+  <desc id="d3">Mechanisms replace live human presence at each gate</desc>
+  <defs>
+    <marker id="mk" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L6,3 z" fill="#f57f17"/>
+    </marker>
+  </defs>
+  <style>
+    .k{fill:#fffde7;stroke:#f57f17;stroke-width:2;rx:10}
+    .c{fill:#fce4ec;stroke:#ad1457;stroke-width:1.5;rx:8}
+    .txt{font:13px ui-sans-serif,system-ui,sans-serif;fill:#222}
+    .sub{font:11px ui-sans-serif,system-ui,sans-serif;fill:#555}
+  </style>
+  <text x="360" y="28" text-anchor="middle" style="font:14px ui-sans-serif,sans-serif;font-weight:600;fill:#333">Part III: replace the human in the loop with mechanisms at the boundaries</text>
+  <!-- Key 1 -->
+  <rect class="k" x="40" y="55" width="180" height="70"/>
+  <text x="130" y="88" text-anchor="middle" class="txt" font-weight="600">Key #1 · Alignment</text>
+  <text x="130" y="108" text-anchor="middle" class="sub">specs, Plan mode, files</text>
+  <path d="M 225 90 L 268 90" stroke="#f57f17" stroke-width="3" fill="none" marker-end="url(#mk)"/>
+  <rect class="c" x="275" y="55" width="160" height="70"/>
+  <text x="355" y="95" text-anchor="middle" class="txt">Chokepoint 1</text>
+  <!-- Key 2 -->
+  <rect class="k" x="40" y="145" width="180" height="70"/>
+  <text x="130" y="178" text-anchor="middle" class="txt" font-weight="600">Key #2 · Contract</text>
+  <text x="130" y="198" text-anchor="middle" class="sub">test plan, verifier, CI</text>
+  <path d="M 225 180 L 268 180" stroke="#f57f17" stroke-width="3" fill="none" marker-end="url(#mk)"/>
+  <rect class="c" x="275" y="145" width="160" height="70"/>
+  <text x="355" y="185" text-anchor="middle" class="txt">Chokepoint 2</text>
+  <!-- Key 3 -->
+  <rect class="k" x="480" y="100" width="200" height="70"/>
+  <text x="580" y="133" text-anchor="middle" class="txt" font-weight="600">Key #3 · Discipline</text>
+  <text x="580" y="153" text-anchor="middle" class="sub">AGENTS.md, skills, design</text>
+  <path d="M 440 135 L 468 90" stroke="#f57f17" stroke-width="3" fill="none" marker-end="url(#mk)"/>
+  <path d="M 440 135 L 468 180" stroke="#f57f17" stroke-width="3" fill="none" marker-end="url(#mk)"/>
+  <text x="355" y="238" text-anchor="middle" class="sub">Key #3 (maintainability) also enables safe parallel decomposition (Ch. 7)</text>
+</svg>

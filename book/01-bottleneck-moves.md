@@ -28,6 +28,8 @@ All three share a structural feature: **they require human attention in the loop
 
 > The reason parallel AI "doesn't work" for most people is not that the agents are bad. It is that those three chokepoints are still staffed by the human, so adding agents just adds queues.
 
+![Diagram: multiple agents converging on one human who serially staffs three chokepoints — requirement alignment, correctness, and maintainability](assets/three-chokepoints.svg)
+
 This is the first and most important frame of the book: **the bottleneck moves, it does not disappear.** You can't make AI development faster by only adding agents. You have to move the human out of the place the queue forms.
 
 ## Why this wasn't possible until recently
@@ -63,6 +65,8 @@ If the three chokepoints are what kept parallel dev from working, the rest of th
 - **Chapter 5** — Key #3 — how to encode the engineering discipline you'd otherwise enforce in review, as skills the agent applies itself.
 
 Each one replaces "human in the live loop" with "human at the start and end, mechanism in the middle." That's the entire trick.
+
+![Diagram: three keys (alignment, contract, discipline) mapped to the three chokepoints they mechanize](assets/three-keys.svg)
 
 If you strip Cherny's shared workflow down, he is doing exactly this: `CLAUDE.md` accumulates the project-specific rules that used to be enforced in review (Key #3), slash commands compress handoff at the execution edges, and the numbered-tab setup is just an ergonomic wrapper around rotating his attention between agents while each one runs autonomously in its middle. Geoffrey Huntley's publicly documented [Ralph Wiggum loop](https://ghuntley.com/ralph/) is a different shape of the same move: a bash loop (`while :; do cat PROMPT.md | claude-code ; done`) that runs a *fresh* context window per iteration against a `PROMPT.md` and a `specs/` directory, with tests as backpressure — the human is the author of the spec and the author of the prompt, nothing in between. The 2026 convention that has grown out of this — Plan Mode in Claude Code, Spec-Driven Development as methodology (see Chapter 3) — is the mature form. Harper Reed's early-2025 [three-stage LLM codegen workflow](https://harper.blog/2025/02/16/my-llm-codegen-workflow-atm/) is the widely-recognized ancestor, and its prompts still circulate, but by 2026 standards that pattern is considered incomplete without explicit verification criteria and interface contracts. Three independent pioneers, three different aesthetics, one structural claim: replace live human presence with durable artifacts at the boundaries, and the middle becomes safe to parallelize.
 

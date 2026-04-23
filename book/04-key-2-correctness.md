@@ -41,6 +41,8 @@ This directly answers the concern you'll see below about "tests and code sharing
 
 > **Adopt the Adversarial Agent Pattern explicitly for any non-trivial correctness surface.** Model it as three roles with three separate contexts. A single agent writing code *and* tests *and* grading itself is a regression, not a workflow.
 
+![Diagram: Coordinator assigns Implementors in isolated worktrees; an independent Verifier checks outputs against the spec](assets/tpd-adversarial.svg)
+
 ### The prompt that turns a spec into a test plan
 
 If your tool doesn't have a built-in Verifier role, you can still create one manually — start a fresh session with *only* the spec loaded (no implementation context), and ask:

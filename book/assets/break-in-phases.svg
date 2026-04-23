@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="200" viewBox="0 0 720 200" role="img" aria-labelledby="t2 d2">
+  <title id="t2">Four break-in phases</title>
+  <desc id="d2">Chaos to leverage progression</desc>
+  <style>
+    .box{rx:10;stroke-width:1.8}
+    .t{font:14px ui-sans-serif,system-ui,sans-serif;fill:#1a1a1a;font-weight:600}
+    .s{font:11px ui-sans-serif,system-ui,sans-serif;fill:#555}
+    .arr{stroke:#888;stroke-width:2;fill:none}
+  </style>
+  <rect class="box" x="20" y="50" width="130" height="100" fill="#ffebee" stroke="#c62828"/>
+  <text x="85" y="88" text-anchor="middle" class="t">Phase 1</text>
+  <text x="85" y="108" text-anchor="middle" class="s">Chaos</text>
+  <path class="arr" d="M 155 100 L 178 100" marker-end="url(#m)"/>
+  <rect class="box" x="185" y="50" width="130" height="100" fill="#fff8e1" stroke="#f9a825"/>
+  <text x="250" y="88" text-anchor="middle" class="t">Phase 2</text>
+  <text x="250" y="108" text-anchor="middle" class="s">Awareness</text>
+  <path class="arr" d="M 320 100 L 343 100" marker-end="url(#m)"/>
+  <rect class="box" x="350" y="50" width="130" height="100" fill="#e8f5e9" stroke="#2e7d32"/>
+  <text x="415" y="88" text-anchor="middle" class="t">Phase 3</text>
+  <text x="415" y="108" text-anchor="middle" class="s">Templating</text>
+  <path class="arr" d="M 485 100 L 508 100" marker-end="url(#m)"/>
+  <rect class="box" x="515" y="50" width="185" height="100" fill="#e3f2fd" stroke="#1565c0"/>
+  <text x="607" y="88" text-anchor="middle" class="t">Phase 4</text>
+  <text x="607" y="108" text-anchor="middle" class="s">Leverage</text>
+  <defs>
+    <marker id="m" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L6,3 z" fill="#888"/>
+    </marker>
+  </defs>
+  <text x="360" y="32" text-anchor="middle" style="font:15px ui-sans-serif,sans-serif;fill:#333;font-weight:600">Break-in: same tools, different depth of co-adaptation</text>
+  <text x="360" y="185" text-anchor="middle" style="font:12px ui-sans-serif,sans-serif;fill:#666">Skill rate peaks in Phase 2, then falls; throughput rises in Phase 4</text>
+</svg>

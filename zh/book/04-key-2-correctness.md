@@ -60,6 +60,8 @@ TPD 不是在"智识实践"意义上替代 TDD。它是针对"实现会被某种
 
 > **对任何不 trivial 的正确性面，明确采用 Adversarial Agent Pattern。** 把它建模成三个角色、三个独立上下文。让一个 Agent 写代码**又**写测试**又**给自己打分，是一次退步，不是一套工作流。
 
+![示意图：协调者把任务分给不同 worktree 里的实现者；独立的验证者对照 spec 检查产出](assets/tpd-adversarial.svg)
+
 ### 把 spec 转成测试计划的 prompt
 
 如果你的工具没内建 Verifier 角色，你可以手动搭一个——开一个新 session，只加载 spec（不带实现上下文），然后这样问：

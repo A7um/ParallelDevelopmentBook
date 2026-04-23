@@ -35,6 +35,8 @@
 
 这经典地是*分诊*。而分诊从结构上就是**Agent 擅长的工作**——只要你给它对的输入。解析报告、按主题聚类、按严重度排序、每条写一句总结：这在任何现代 Agent 能力内。缺的不是能力，是管道的**结构**。
 
+![示意图：多个执行 Agent 的产出汇入分诊 Agent；你只处理需要拍板的事项](assets/digest-pipeline.svg)
+
 ## 把戏：让 Agent 分诊 Agent
 
 动作是把 Agent 产出流当作代码一样对待：一个不应该需要你在内循环里的东西。
@@ -73,7 +75,7 @@
 
 这（恰当地）又是磨合期露面的地方。分诊层随着你学你这些 Agent 常犯什么错而成熟。
 
-*参考*：[`zero-review/auto-triage`](https://github.com/A7um/zero-review/tree/main/skills/auto-triage) *（开发中——部分参考）*
+*参考*：`[zero-review/auto-triage](https://github.com/A7um/zero-review/tree/main/skills/auto-triage)` *（开发中——部分参考）*
 
 ## 分诊层成熟前你能做的
 
@@ -89,7 +91,7 @@
 
 在真正分诊层存在之前，早期最杠杆的一个加法，是一条强制每个执行 Agent 在结束工作前产出**结构化**报告的 skill。最小可用版本规定六节——`状态`（COMPLETE / NEEDS_INPUT / BLOCKED）、`做了什么`、`测试`（绿 / 红 / 未跑）、`我不确定的事`、`需要人输入的`、`我推荐的后续`——并禁止在这几节之外写自由散文。
 
-这条 skill 加载到每个执行 Agent 上，就把 20 份自由格式报告变成 20 份有同样六节的报告。那时分诊 Agent——或你用眼扫——能在一小部分时间里处理这批，因为你知道该**报告里哪一节**找你在乎的部分。这类 skill 本身的写作细节属于 [*The Skill Design Book*](https://github.com/A7um/SkillDesignBook)；这里要紧的是机制。它和 Cherny 的 [`/commit-push-pr` slash 命令](https://x.com/bcherny/status/2007179833990885678) 是同一个形状的小尺度版本——把产出强制成可预测形状，让下游消费者不用每份都从头读。
+这条 skill 加载到每个执行 Agent 上，就把 20 份自由格式报告变成 20 份有同样六节的报告。那时分诊 Agent——或你用眼扫——能在一小部分时间里处理这批，因为你知道该**报告里哪一节**找你在乎的部分。这类 skill 本身的写作细节属于 *[The Skill Design Book](https://github.com/A7um/SkillDesignBook)*；这里要紧的是机制。它和 Cherny 的 `[/commit-push-pr` slash 命令]([https://x.com/bcherny/status/2007179833990885678](https://x.com/bcherny/status/2007179833990885678)) 是同一个形状的小尺度版本——把产出强制成可预测形状，让下游消费者不用每份都从头读。
 
 > **结构化报告是分诊层成熟之前你能部署的最大单一收益。** 本章你只做一件事，就做这个。
 

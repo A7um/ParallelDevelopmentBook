@@ -28,6 +28,8 @@
 
 > 大多数人会得出"并行 AI 没用"的结论，原因不是 Agent 本身差，而是那三个卡点还站着人，多开 Agent 只是多开了几条队列。
 
+![示意图：多个 Agent 的产出汇入同一个人，这个人串行地守住需求对齐、正确性验证、可维护性三道门](assets/three-chokepoints.svg)
+
 这是本书最重要的第一个框架：**瓶颈只是转移，不会消失。** 光加 Agent 不能让 AI 开发变快。你得把人从那个队列形成的位置上挪走。
 
 ## 为什么这在以前做不到
@@ -63,6 +65,8 @@
 - **第 5 章** — 钥匙 #3 — 怎么把你原本要在审查里执行的那套工程纪律，编码成 Agent 自己应用的 skill。
 
 每一把钥匙做的事都一样：**把"人在实时回路里"换成"人在起点和终点，机制在中间"**。整个把戏就在这里。
+
+![示意图：三把钥匙（对齐、契约、纪律）分别对应并消解三个卡点](assets/three-keys.svg)
 
 把 Cherny 公开的工作流拆开，他做的正是这件事：`CLAUDE.md` 是第 3 把钥匙的动态实现——把过去在审查里执行的项目规则变成不断增长的文档；slash 命令是在执行边界上把对齐和交接机制化；编号标签 + 通知只是"把注意力在各个中间环节之间轮转"的人体工学外壳。Geoffrey Huntley 公开记录的 [Ralph Wiggum 循环](https://ghuntley.com/ralph/) 则是同一个动作的另一种形态：一个 bash 循环（`while :; do cat PROMPT.md | claude-code ; done`）每次用**全新**的上下文窗口去跑一个 `PROMPT.md` 加一个 `specs/` 目录，测试作为反向压力——人只负责写 spec 和 prompt，中间一概没有。2026 年社区已经把这种模式固化成 Plan Mode 和 Spec-Driven Development（见第 3 章），这是更成熟的形态。早在 2025 年 2 月，Harper Reed 那份广泛传播的 [三阶段 LLM codegen workflow](https://harper.blog/2025/02/16/my-llm-codegen-workflow-atm/) 就是这个共识公认的祖先——它的 prompt 今天仍然在用，但按 2026 年标准，那套 pattern 没有显式的验收标准和接口契约，是不完整的。
 

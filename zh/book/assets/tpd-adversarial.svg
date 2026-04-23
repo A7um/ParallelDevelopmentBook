@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="220" viewBox="0 0 680 220" role="img" aria-labelledby="t5 d5">
+  <title id="t5">Adversarial agent pattern</title>
+  <desc id="d5">Coordinator, implementors, independent verifier</desc>
+  <style>
+    .box{rx:10;stroke-width:1.8;font:13px ui-sans-serif,sans-serif}
+    .impl{fill:#e3f2fd;stroke:#1565c0}
+    .coord{fill:#ede7f6;stroke:#5e35b1}
+    .ver{fill:#e8f5e9;stroke:#2e7d32}
+    .sub{fill:#fafafa;stroke:#999;font-size:11px}
+  </style>
+  <rect class="box coord" x="40" y="70" width="140" height="80"/>
+  <text x="110" y="108" text-anchor="middle" font-weight="600" fill="#1a1a1a">Coordinator</text>
+  <text x="110" y="128" text-anchor="middle" class="sub">reads spec, splits work</text>
+  <path d="M 185 110 L 228 110" stroke="#666" stroke-width="2" marker-end="url(#a5)"/>
+  <rect class="box impl" x="235" y="40" width="120" height="60"/>
+  <text x="295" y="68" text-anchor="middle" font-weight="600" fill="#1a1a1a">Implementor</text>
+  <text x="295" y="86" text-anchor="middle" class="sub">worktree A</text>
+  <rect class="box impl" x="235" y="115" width="120" height="60"/>
+  <text x="295" y="143" text-anchor="middle" font-weight="600" fill="#1a1a1a">Implementor</text>
+  <text x="295" y="161" text-anchor="middle" class="sub">worktree B</text>
+  <path d="M 360 110 L 410 110" stroke="#666" stroke-width="2" marker-end="url(#a5)"/>
+  <rect class="box ver" x="418" y="70" width="200" height="80"/>
+  <text x="518" y="105" text-anchor="middle" font-weight="600" fill="#1a1a1a">Verifier</text>
+  <text x="518" y="128" text-anchor="middle" class="sub">fresh read of spec + output · not shared impl context</text>
+  <text x="340" y="205" text-anchor="middle" style="font:11px ui-sans-serif,sans-serif;fill:#666">Model tiering: strongest on spec, mid on impl, fast/cheap on verify (typical 2026 practice)</text>
+  <defs>
+    <marker id="a5" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L6,3 z" fill="#666"/>
+    </marker>
+  </defs>
+</svg>

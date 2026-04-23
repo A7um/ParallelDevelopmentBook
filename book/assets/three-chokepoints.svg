@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="300" viewBox="0 0 720 300" role="img" aria-labelledby="title desc">
+  <title id="title">Three chokepoints on one human</title>
+  <desc id="desc">Multiple agents feed work into three bottlenecks staffed by one person</desc>
+  <defs>
+    <style type="text/css"><![CDATA[
+      .label{font:13px ui-sans-serif,system-ui,sans-serif;fill:#1a1a1a}
+      .small{font:12px ui-sans-serif,system-ui,sans-serif;fill:#444}
+      .agent{fill:#e8f4fc;stroke:#1565c0;stroke-width:1.5}
+      .human{fill:#fff3e0;stroke:#e65100;stroke-width:2}
+      .choke{fill:#fce4ec;stroke:#c2185b;stroke-width:1.5}
+    ]]></style>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L6,3 z" fill="#666"/>
+    </marker>
+  </defs>
+  <rect class="agent" x="30" y="35" width="88" height="44" rx="8"/>
+  <text x="74" y="62" text-anchor="middle" class="label">Agent A</text>
+  <rect class="agent" x="30" y="95" width="88" height="44" rx="8"/>
+  <text x="74" y="122" text-anchor="middle" class="label">Agent B</text>
+  <rect class="agent" x="30" y="155" width="88" height="44" rx="8"/>
+  <text x="74" y="182" text-anchor="middle" class="label">Agent C</text>
+  <rect class="agent" x="30" y="215" width="88" height="44" rx="8"/>
+  <text x="74" y="242" text-anchor="middle" class="label">Agent D</text>
+  <path d="M 125 57 L 248 90" stroke="#666" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+  <path d="M 125 117 L 248 110" stroke="#666" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+  <path d="M 125 177 L 248 130" stroke="#666" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+  <path d="M 125 237 L 248 150" stroke="#666" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+  <ellipse class="human" cx="310" cy="120" rx="72" ry="88"/>
+  <text x="310" y="118" text-anchor="middle" class="label" font-weight="600">You</text>
+  <text x="310" y="138" text-anchor="middle" class="small">serial attention</text>
+  <rect class="choke" x="440" y="28" width="250" height="52" rx="8"/>
+  <text x="565" y="52" text-anchor="middle" class="label" font-weight="600">1 · Requirement alignment</text>
+  <text x="565" y="70" text-anchor="middle" class="small">specs, questions, taste</text>
+  <path d="M 385 75 L 430 54" stroke="#666" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+  <rect class="choke" x="440" y="98" width="250" height="52" rx="8"/>
+  <text x="565" y="122" text-anchor="middle" class="label" font-weight="600">2 · Correctness</text>
+  <text x="565" y="140" text-anchor="middle" class="small">review, tests, debugging</text>
+  <path d="M 385 120 L 430 124" stroke="#666" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+  <rect class="choke" x="440" y="168" width="250" height="52" rx="8"/>
+  <text x="565" y="192" text-anchor="middle" class="label" font-weight="600">3 · Maintainability</text>
+  <text x="565" y="210" text-anchor="middle" class="small">architecture, style, debt</text>
+  <path d="M 385 165 L 430 194" stroke="#666" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+  <text x="360" y="278" text-anchor="middle" class="small">More agents, same three gates: longer queues, not higher throughput</text>
+</svg>

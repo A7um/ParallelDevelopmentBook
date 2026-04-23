@@ -16,6 +16,8 @@ This is the chapter most AI development books skip, because it's not flattering 
 
 The break-in isn't gradual in the sense of smooth. It has shape. Four phases, each with a distinct experience and a distinct signal for when you've moved on.
 
+![Diagram: break-in phases from Chaos through Awareness, Templating, to Leverage](assets/break-in-phases.svg)
+
 ### Phase 1: Chaos
 
 **What it feels like**: You've read this book or something like it. You launch three agents at once. Within an hour, two of them have touched overlapping files, one has interpreted the requirement in a way you didn't intend, and you have three PRs to review that all need substantial rework. By the end of the day, you're more tired than if you'd written the code yourself, and the output is worse.

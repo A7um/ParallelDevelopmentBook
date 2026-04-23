@@ -35,6 +35,8 @@ Unlike the three chokepoints from Chapter 1, this one is not about judgment. It'
 
 This is classically *triage*. And triage, structurally, is a job that *agents are good at* — provided you give them the right inputs. Parsing reports, clustering by theme, ranking by severity, writing a one-line summary per item: this is within the capability of any modern agent. What's missing is not the capability but the *structure* of the pipeline.
 
+![Diagram: many execution agents feed a triage agent; you stay at the decision-only end](assets/digest-pipeline.svg)
+
 ## The trick: agents triage agents
 
 The move is to treat the agent output stream the same way you treated the source code: as something that shouldn't require you in the inner loop.
