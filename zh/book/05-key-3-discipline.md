@@ -1,20 +1,20 @@
 # 第 5 章：钥匙 #3 — 用工程纪律约束 Agent
 
-> **论点**：Skill 不是一次性安装的东西。它是你磨合过程中沉淀下来的"活档案"，专门编码**你这个项目**里特定的坏习惯。通用的工程原则只是起点，不是终点。
+> **论点**：Skill 不是装一次就完事的配置，而是你在项目里一条条记下来的约定——尤其是 Agent 犯过、不该再犯的那类错。通用的设计原则可以写进 skill，但离不开针对本仓库的补充规则。
 
 ---
 
 ## 为什么只保证正确性不够
 
-第 4 章把正确性做成了机制。一段代码可以正确但对代码库是灾难——结构糟糕、过度耦合、混用三套命名、在两个目录之外已经存在的工具函数被它重新发明一遍。正确性让你扛过今天；**可维护性**决定下周的 Agent 能不能在你这周交付的代码里工作。
+第 4 章讲的是：怎么让「对不对」有凭据。但代码可以既对又难维护：结构乱、耦合紧、命名三套、现成的工具函数旁边又造一个轮子。今天能跑通，下周换谁来（人或 Agent）都头疼。**可维护性**决定这条线能走多远。
 
-单 Agent、人审的工作流里，可维护性由你在审查中执行。你会说"这里别用继承，用策略对象"，Agent 就改。这条路径 scale 不到三个 Agent 在同一小时里交出三个 PR。要么机制化，要么它停止被执行。
+单 Agent、你亲自审的时候，你会随口一句「这里别用继承，换策略模式」，Agent 就改。可一旦一小时里要合三个 PR、三个 Agent 各写各的，这种口头纪律根本跟不过来——要么写进机制，要么就等于没人管。
 
-机制就是 **skill**。Skill 是在 Agent 启动时加载的结构化文档，它塑造 Agent 如何做设计、如何审自己的产出。它把"你在审查里会说的话"变成"Agent 交付前会自检的东西"。
+**Skill** 就是那套机制：启动时加载的一组约定，规定 Agent 怎么设计、交付前要自检什么。你在 review 里常会强调的那些点，尽量写成它交差前自己先过一遍的清单。
 
 ## 通用原则——起点
 
-项目 skill 集合的前一半，是你在任何 code review 里都会提的通用软件设计纪律。这部分大多来自 Ousterhout 的 *A Philosophy of Software Design*，可以干净地编码成一份短 skill，把 Agent 的初版架构从*默认值*抬到*可用的中等水平*：
+Skill 里常常先写进去的，是你在 code review 里也会讲的那套通用设计约束，思路多来自 Ousterhout 的 *A Philosophy of Software Design*。写成一份不长的 skill，一般就能把 Agent 的第一版结构从「默认水平」往上抬一截：
 
 - **深模块。** 接口简单，内部功能深厚。Agent 天然倾向拆过细；skill 要显式把它推回来。
 - **信息隐藏。** 模块不应该泄露内部。Agent 这一条最常见的失败是按执行顺序拆模块（"A 步模块、B 步模块"），而不是按知识归属拆——后者几乎必然泄露。
@@ -27,20 +27,20 @@
 
 这些是好默认。编码成 skill 后，Agent 的初版架构会明显高于它未经训练的基线。
 
-但通用原则有上限。一个"知道"这些原则的 Agent，仍然可能漏掉你代码库已有的工具函数自己造一遍、用一种两年前你某个文件里用过但代码库其它地方都不用的命名风格、或选一个抽象上正确但不匹配你所用框架约定的设计模式。通用 skill 抓不到这些，因为它们**特定于你的项目**。通用线以外，skill 必须是你的。
+这些原则解决的是「通用」那一半问题。另一半要靠项目自己的约定：例如仓库里已有工具函数却被忽略、命名和全库风格不一致、抽象上说得通却和当前框架习惯不符——这类事只能写进**针对本仓库**的 skill，靠你在实际出错时逐步补全。
 
-> 单份 skill 文档本身的写作工艺——结构、描述用词、触发条件、失败模式——是 *[The Skill Design Book](https://github.com/A7um/SkillDesignBook)* 的主题。本章关心的是 skill **在并行工作流里作为可维护性机制**如何起作用，不是教你怎么写一份。
+> 若关心 skill 文档怎么写（标题、触发条件、正文结构、失败模式等），见 *[The Skill Design Book](https://github.com/A7um/SkillDesignBook)*。本章只讨论：在并行开发里，skill 如何承担**可维护性**这一环。
 
 ## 先驱们怎么真正积累他们的 skill（以及 2026 年的研究说了什么）
 
-本章写作前的六个月里，业界已把 `AGENTS.md` 标准化为跨工具的上下文文件。Claude Code（通过 `CLAUDE.md` 符号链接）、Cursor、Codex、Gemini 的 antigravity 和大多数主流 Agent 都采纳了。最有用的当前参考是 Augment 团队（2026 年 3 月）的 *[How to Build Your AGENTS.md (2026)](https://www.augmentcode.com/guides/how-to-build-agents-md)*。
+近半年里，各家工具渐渐认同一套做法：用 `AGENTS.md`（或链到它的 `CLAUDE.md`）当「给机器看的 README」。Claude Code、Cursor、Codex、Gemini 这一路都在往这靠。想系统搭一份，Augment 2026 年 3 月这篇 *[How to Build Your AGENTS.md (2026)](https://www.augmentcode.com/guides/how-to-build-agents-md)* 写得很实在。
 
 最近六个月里几项值得内化的发现：
 
 - **保持在 150 行以下。** ETH Zurich 2026 年 2 月的研究（在 Paul Withers 的 *[Is AGENTS.md Engineering the next optimisation approach?](https://paulswithers.github.io/blog/2026/02/23/agentsmd-engineering/)* 有总结）发现冗长或 LLM 生成的 `AGENTS.md` 反而会**降低**任务成功率、推高成本——原因是长上下文上的"lost in the middle"退化。人类手作、简洁的文件性能明显更好。
 - **嵌套用于模块化。** Agent 优先读取当前工作目录最近的那个 `AGENTS.md`。根目录放一个短的、覆盖代码库范围的文件，然后在需要不同规则的子目录里放聚焦的 `AGENTS.md`。
 - **符号链接解决跨工具。** 2026 年的常规动作是 `ln -s AGENTS.md CLAUDE.md`——这样你用的每一个 Agent 不管它偏爱哪个文件名都读同一份。这现在是标准做法。
-- **把它当代码对待。** 检入 git、版本控制、在 PR 中审查。Mitchell Hashimoto 在 *[My AI Adoption Journey*（2026 年 2 月）](https://mitchellh.com/writing/my-ai-adoption-journey) 里把 `AGENTS.md` 当作一份每次观察到新失败类别就更新的活合同——不是一次写完的东西。
+- **把它当代码对待。** 检入 git、版本控制、在 PR 中审查。Mitchell Hashimoto 在 [*My AI Adoption Journey*（2026 年 2 月）](https://mitchellh.com/writing/my-ai-adoption-journey) 里把 `AGENTS.md` 当作一份每次观察到新失败类别就更新的活合同——不是一次写完的东西。
 - **Skill 是另一个通道。** Anthropic 的 [Agent Skills](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview) 和 Addy Osmani 的 [2026 同一模式写法](https://beyond.addy.ie/2026-trends/) 把*总是加载*的上下文（`AGENTS.md`）和*按需加载*的 skill（`SKILL.md` 在自己的目录里，按任务相关性触发）分开。这个切分很重要，因为它让你拥有五十条特化 skill 而不会撑爆每一个 session。
 
 2026 共识压缩一句：**根目录一份精干的 `AGENTS.md` 承载持久的代码库范围规则，一个聚焦 `SKILL.md` 包的库承载任务专用工作流，都检入 git，都纳入版本控制，都在 PR 中审。** 成熟项目最后大概是一份 60–120 行左右的根 `AGENTS.md` 加十到四十条聚焦 skill，每条都绑定到 Agent 犯过一次、不该再犯的一类具体错误上。单条 skill 的形状——描述、触发、正文、检查表——在 *[The Skill Design Book](https://github.com/A7um/SkillDesignBook)* 里有详尽处理；这里要紧的是**文件里每一条规则都来自一次具体失败、携带它的原因，并且如果你没亲眼看 Agent 犯错，它就不会出现**。
@@ -83,14 +83,14 @@ skill 到位后，Agent 对一个功能的工作长这样：
 
 `zero-review/auto-dev` skill 把这个三阶段循环——架构设计、实现与验证、自审——编码成一条可跑 skill，包括 Ousterhout 衍生的设计原则和一份具体自审清单。值得一读，是"把工程纪律编码为 skill"的范例。
 
-*参考*：`[zero-review/auto-dev](https://github.com/A7um/zero-review/tree/main/skills/auto-dev)`
+*参考*：[`zero-review/auto-dev`](https://github.com/A7um/zero-review/tree/main/skills/auto-dev)
 
 ---
 
 ## 外部声音
 
 - **支持**：*A Philosophy of Software Design*（Ousterhout）仍是底层原则最好的单一来源。Anthropic 的 [Agent Skills 文档](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview) 把注入机制固化。关于单份 skill 文档本身的写作工艺，参见 *[The Skill Design Book](https://github.com/A7um/SkillDesignBook)*。
-- **反驳**：基于规则的设计的批评者主张编码的原则会僵化成形式主义检查表、失去本意。这是真实风险，尤其对通用 skill。反驳是：项目特定的 skill 不泛化、因此不僵化——它们和它们所由之来的伤疤绑定。
+- **反驳**：有人担心规则写进文件会变成形式主义清单、反而误事，这种担心对「大而全的通用 skill」尤其成立。项目专用的 skill 往往只针对一两类真实出过的问题，不容易漂成空话。
 
 ## 下一章
 
