@@ -92,6 +92,20 @@ Cognition 的 *[Devin can now Manage Devins](https://cognition.ai/blog/devin-can
 
 **什么时候伸手**：第 3 阶段及以上，在分解明显的任务上（你本可以手工用模式 3，但很烦）。把它当作替代模式 3 的省力工具，不是神奇的生产力乘数。
 
+## 一次最多开几个
+
+实用上限，粗略：
+
+- **第 2 阶段**：一到两个 Agent。超过两个会崩。
+- **第 3 阶段**：三到四个比较舒服。第五个开始要刻意的注意力纪律。
+- **第 4 阶段**：五到八个，搭配模式组合。超过八个，经验丰富的工程师也会掉线。
+
+Cherny 报告同时跑 10 到 15 个 Claude Code session。那是一个经过深度磨合的操作者、在一个成熟代码库上的高端值；不是基线。读一下他的工作流（[Educative](https://www.educative.io/newsletter/artificial-intelligence/claude-code-creators-workflow)），你会看到配套机械——编号终端标签、系统通知、`/commit-push-pr` slash 命令、让 Claude 能测它刚造出的 UI 的 Chrome 扩展——这些存在就是为了让 15 个 Agent 能被*一份注意力*管得过来。没这些机械，上限会陡降。
+
+限速的几乎从来不是 Agent 算力或工具。是**你在对齐和审查阶段、在任务之间轮转时保持上下文的能力**。多开 Agent 让 Agent 更多，但让人机协作时刻的决策更差——第 1 章说过，那才是真正瓶颈所在。
+
+> **并行 Agent 的合适数量，就是"你的对齐和审查质量还不退化"的最大那个数。**
+
 ## 范例——Geoffrey Huntley 的 Ralph 循环作为最小调度原语
 
 Ralph 循环在 [ghuntley.com/ralph](https://ghuntley.com/ralph/) 和 [`how-to-ralph-wiggum`](https://github.com/ghuntley/how-to-ralph-wiggum) 有公开记录，值得研究，因为它是有人发表过的**最简单可用的并行 Agent 调度器**。剥到最核心：
