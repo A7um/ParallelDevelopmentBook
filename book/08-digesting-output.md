@@ -87,46 +87,9 @@ Short-term defenses you can deploy today, while the triage idea is still evolvin
 
 ## A minimal structured-report skill
 
-One of the highest-leverage things you can add early, before any real triage layer exists, is a skill that forces every execution agent to end its work with a *structured* report. A minimal version:
+The highest-leverage thing you can add early, before any real triage layer exists, is a skill that forces every execution agent to end its work with a *structured* report. The minimum viable version specifies six sections — `Status` (COMPLETE / NEEDS_INPUT / BLOCKED), `What was done`, `Tests` (green/red/not run), `What I was unsure about`, `What needs human input`, `Follow-ups I would recommend` — and forbids free-form prose outside them.
 
-```markdown
----
-name: end-of-task-report
-description: Use this skill at the end of every task, before declaring complete.
-  Produces a structured report the human (or triage agent) can consume quickly.
----
-
-# End-of-task report
-
-At the end of every task, produce a report with exactly these sections:
-
-## Status
-One of: COMPLETE | NEEDS_INPUT | BLOCKED
-
-## What was done
-A bulleted list of the concrete changes made, one bullet per change. File
-paths in backticks. Past tense.
-
-## Tests
-- Which test suites were run, and the result (green / red / not run).
-- Any test that was expected to exist but was not found.
-
-## What I was unsure about
-Decisions I made where I chose a default but flagged the ambiguity. One bullet
-per decision, each with: the decision, the option I chose, and a one-line
-reason. Empty list is fine if nothing.
-
-## What needs human input
-Bulleted list of things I could not resolve without a human. Empty list is fine.
-
-## Follow-ups I would recommend
-Bulleted list of things I noticed that are out of scope for this task but
-probably should be addressed eventually. Empty list is fine.
-```
-
-That skill, loaded on every execution agent, turns twenty free-form reports into twenty reports with the same six sections. At that point a triage agent — or you, scanning by eye — can process the batch in a small fraction of the time, because you know *where in the report* to look for the parts you care about.
-
-This pattern is what Cherny's [`/commit-push-pr` slash command](https://x.com/bcherny/status/2007179833990885678) is structurally doing at a smaller scale: not just automating the commit, but forcing the PR description into a predictable shape so the person (or script) downstream of it can consume it without reading each one from scratch.
+Loaded on every execution agent, that single skill turns twenty free-form reports into twenty reports with the same six sections. A triage agent — or you, scanning by eye — can process the batch in a fraction of the time, because you know *where in the report* the parts you care about live. The authoring details for such a skill belong to [*The Skill Design Book*](https://github.com/A7um/SkillDesignBook); what matters here is the mechanism. It's the same shape as Cherny's [`/commit-push-pr` slash command](https://x.com/bcherny/status/2007179833990885678) at smaller scale — forcing the output into a predictable form so the consumer downstream doesn't have to read each one from scratch.
 
 > **Structured reports are the single biggest digestion-layer win you can deploy while the full triage layer is still maturing.** If you do nothing else from this chapter, do this.
 

@@ -14,7 +14,7 @@
 
 ## 通用原则——起点
 
-好的软件设计有核心原则，John Ousterhout 在 *A Philosophy of Software Design* 里最锋利地表述过，几十年实践把它们打磨过。Agent 像新员工一样，被明说总比被指望从代码库里自行推断要好：
+项目 skill 集合的前一半，是你在任何 code review 里都会提的通用软件设计纪律。这部分大多来自 Ousterhout 的 *A Philosophy of Software Design*，可以干净地编码成一份短 skill，把 Agent 的初版架构从*默认值*抬到*可用的中等水平*：
 
 - **深模块。** 接口简单，内部功能深厚。Agent 天然倾向拆过细；skill 要显式把它推回来。
 - **信息隐藏。** 模块不应该泄露内部。Agent 这一条最常见的失败是按执行顺序拆模块（"A 步模块、B 步模块"），而不是按知识归属拆——后者几乎必然泄露。
@@ -25,132 +25,29 @@
 - **文档增量信息。** 注释应描述代码无法表达的——意图、权衡、不变式。不是字面复述代码做什么。
 - **战略优于战术设计。** 每一次改动都是对结构的投资。短平快最终以复利利息堆出技术债。
 
-这些是好默认。编码成 skill 后，Agent 的初版架构会明显比它默认值好。
+这些是好默认。编码成 skill 后，Agent 的初版架构会明显高于它未经训练的基线。
 
-但通用原则有上限。一个"知道"这些原则的 Agent 仍然可能：
+但通用原则有上限。一个"知道"这些原则的 Agent，仍然可能漏掉你代码库已有的工具函数自己造一遍、用一种两年前你某个文件里用过但代码库其它地方都不用的命名风格、或选一个抽象上正确但不匹配你所用框架约定的设计模式。通用 skill 抓不到这些，因为它们**特定于你的项目**。通用线以外，skill 必须是你的。
 
-- 漏掉你代码库里已有的工具模块，自己造一个平行版本。
-- 用一种 2023 年你某个文件里用过但代码库其它地方都不用的命名风格。
-- 选一种抽象上正确但不匹配你所用框架约定的设计模式。
-
-通用 skill 抓不到这些，因为它们**特定于你的项目**。通用线以外，skill 必须是你的。
+> 单份 skill 文档本身的写作工艺——结构、描述用词、触发条件、失败模式——是 *[The Skill Design Book](https://github.com/A7um/SkillDesignBook)* 的主题。本章关心的是 skill **在并行工作流里作为可维护性机制**如何起作用，不是教你怎么写一份。
 
 ## 先驱们怎么真正积累他们的 skill（以及 2026 年的研究说了什么）
 
-本章写作前的六个月里，业界已把 `AGENTS.md` 标准化为跨工具的上下文文件。Claude Code（通过 `CLAUDE.md` 符号链接）、Cursor、Codex、Gemini 的 antigravity 和大多数主流 Agent 都采纳了。最有用的当前参考是 Augment 团队（2026 年 3 月）的 [*How to Build Your AGENTS.md (2026)*](https://www.augmentcode.com/guides/how-to-build-agents-md)。
+本章写作前的六个月里，业界已把 `AGENTS.md` 标准化为跨工具的上下文文件。Claude Code（通过 `CLAUDE.md` 符号链接）、Cursor、Codex、Gemini 的 antigravity 和大多数主流 Agent 都采纳了。最有用的当前参考是 Augment 团队（2026 年 3 月）的 *[How to Build Your AGENTS.md (2026)](https://www.augmentcode.com/guides/how-to-build-agents-md)*。
 
 最近六个月里几项值得内化的发现：
 
 - **保持在 150 行以下。** ETH Zurich 2026 年 2 月的研究（在 Paul Withers 的 *[Is AGENTS.md Engineering the next optimisation approach?](https://paulswithers.github.io/blog/2026/02/23/agentsmd-engineering/)* 有总结）发现冗长或 LLM 生成的 `AGENTS.md` 反而会**降低**任务成功率、推高成本——原因是长上下文上的"lost in the middle"退化。人类手作、简洁的文件性能明显更好。
 - **嵌套用于模块化。** Agent 优先读取当前工作目录最近的那个 `AGENTS.md`。根目录放一个短的、覆盖代码库范围的文件，然后在需要不同规则的子目录里放聚焦的 `AGENTS.md`。
 - **符号链接解决跨工具。** 2026 年的常规动作是 `ln -s AGENTS.md CLAUDE.md`——这样你用的每一个 Agent 不管它偏爱哪个文件名都读同一份。这现在是标准做法。
-- **把它当代码对待。** 检入 git、版本控制、在 PR 中审查。Mitchell Hashimoto 在 [*My AI Adoption Journey*（2026 年 2 月）](https://mitchellh.com/writing/my-ai-adoption-journey) 里把 `AGENTS.md` 当作一份每次观察到新失败类别就更新的活合同——不是一次写完的东西。
+- **把它当代码对待。** 检入 git、版本控制、在 PR 中审查。Mitchell Hashimoto 在 *[My AI Adoption Journey*（2026 年 2 月）](https://mitchellh.com/writing/my-ai-adoption-journey) 里把 `AGENTS.md` 当作一份每次观察到新失败类别就更新的活合同——不是一次写完的东西。
 - **Skill 是另一个通道。** Anthropic 的 [Agent Skills](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview) 和 Addy Osmani 的 [2026 同一模式写法](https://beyond.addy.ie/2026-trends/) 把*总是加载*的上下文（`AGENTS.md`）和*按需加载*的 skill（`SKILL.md` 在自己的目录里，按任务相关性触发）分开。这个切分很重要，因为它让你拥有五十条特化 skill 而不会撑爆每一个 session。
 
-2026 共识压缩一句：**根目录一份精干的 `AGENTS.md` 承载持久的代码库范围规则，一个聚焦 `SKILL.md` 包的库承载任务专用工作流，都检入 git，都纳入版本控制，都在 PR 中审。**
+2026 共识压缩一句：**根目录一份精干的 `AGENTS.md` 承载持久的代码库范围规则，一个聚焦 `SKILL.md` 包的库承载任务专用工作流，都检入 git，都纳入版本控制，都在 PR 中审。** 成熟项目最后大概是一份 60–120 行左右的根 `AGENTS.md` 加十到四十条聚焦 skill，每条都绑定到 Agent 犯过一次、不该再犯的一类具体错误上。单条 skill 的形状——描述、触发、正文、检查表——在 *[The Skill Design Book](https://github.com/A7um/SkillDesignBook)* 里有详尽处理；这里要紧的是**文件里每一条规则都来自一次具体失败、携带它的原因，并且如果你没亲眼看 Agent 犯错，它就不会出现**。
 
-### 一份在长的 `CLAUDE.md` / `AGENTS.md` 实际长什么样
+真正把质量抬上去的 skill，是那些编码"**你的** Agent 在**你的**代码库里犯过的错"的 skill。"遵守好命名约定"是无用的——Agent 本来就在试。"这个代码库的 handler 命名约定是 `handle<EntityName><Action>`——Agent 倾向写 `<entityName>Handler` 而写错"是金子。这种具体性就是全部要点。
 
-你的项目级文件第一个版本几乎会是空的。没事。下面是这个文件在几周真实使用后的素描——不来自某一位先驱的具体项目，而是把 Cherny、Hashimoto 和 Huntley 公开案例里反复出现的模式拼出来：
-
-```markdown
-# 给 Agent 的项目规则
-
-## 总是
-- 在宣布任务完成前跑 `pnpm check`（typecheck + lint + test）。不绿就不交。
-- `server/routes/*` 里加新 handler，必须在 `server/routes/index.ts` 注册。
-  Agent 已经漏了 3 次。两个文件都要检查。
-- 路由 handler 返回 `{ ok: true, value }` 或 `{ ok: false, error }`。
-  永远不在路由边界抛错。永远不返回裸 payload。
-
-## 永远不要
-- 不要在没问的情况下加新的顶层依赖。我们刻意维护精简依赖列表。
-- 不要引入新的样式方案。代码库用 `styled-components`。
-  不要伸手抓 Tailwind、CSS modules、内联样式——即便局部更容易。
-- 不要编辑 `db/migrations/*` 里已经合入 main 的文件。需要改就建新 migration。
-
-## 这个项目的组织方式
-- 后台任务：定义在 `jobs/*.ts`，并在 `jobs/retries.ts` 注册重试策略。
-  两个文件必须一起改。
-- 测试在实现旁边，命名 `*.test.ts`。集成测试在 `test/integration/`。E2E 是 Playwright，在 `e2e/`。
-- Feature flag 通过 `src/flags.ts` 里的 `getFlag(name)` 读。不要直接读环境变量做特性开关。
-
-## 已知坑
-- `src/legacy/*` 正在被废弃。尽量不要加新引用。
-  必须加时，留一条 `// TODO(legacy-migration)` 注释说明一行理由。
-- `zod` 版本被钉在当前主版本以下，因为和我们表单库有兼容性问题。
-  升级前先查。
-```
-
-几件值得注意的事。第一，每条规则都附了**原因**，哪怕一句。没有原因的话，Agent 的先验偶尔会覆盖掉规则；带上原因，规则就稳。第二，"已知坑"明确**不**是规则列表——是防止 Agent 乱走的上下文。第三，文件里几乎每一项都来自 Agent 犯过一次的具体错误。"3 次"那条不是装饰——是这条规则存在的收据。
-
-你不会从零写这个文件。你**积累**它，一次一个失败。
-
-### 单条 `SKILL.md` 长什么样
-
-当一条规则复杂到需要自己的文档——一个特定工作流、一个多步检查、一个结构化输出格式——它就毕业成 skill。Addy Osmani 的 [*My LLM coding workflow going into 2026*](https://addyosmani.com/blog/ai-coding-workflow/) 和 *[The Skill Design Book](https://github.com/A7um/SkillDesignBook)* 的完整处理有详细说明；一个最小例子如下：
-
-```markdown
----
-name: add-background-job
-description: 在给这个代码库添加新后台任务时使用。涵盖必须一起改的三个
-  文件、重试策略规则、可观测性要求。
----
-
-# 添加后台任务
-
-## 触发
-任务涉及添加新的异步 / 后台 job 时使用——任何会在请求 handler 之外、
-队列上或定时执行的东西。
-
-## 必须一起改的三个文件
-1. `jobs/<name>.ts` — job 实现。必须默认导出一个签名为
-   `(ctx, payload) => Promise<void>` 的函数。
-2. `jobs/retries.ts` — 必须加这个新 job 的条目。如果这个 job 在任何
-   失败上重试都安全，用 `default` 策略。否则指定 `maxAttempts` 和
-   不应触发重试的错误。
-3. `jobs/index.ts` — 导出新 job 以便 scheduler 能找到。
-
-## 可观测性
-每个 job 必须在开始和结束时用 job 名和 payload ID（如果有）记录日志。
-用 `logger.info('job.start', { name, payloadId })`——事件名 `job.start`
-和 `job.finish` 约定锁定；不要改名。
-
-## 交付前自检
-- [ ] 上面三个文件都改了。
-- [ ] 重试策略已指定（default 或显式）。
-- [ ] 日志事件符合约定。
-- [ ] `jobs/<name>.test.ts` 里有测试。
-- [ ] 如果 job 写 DB，测试包含失败 + 重试的情形。
-```
-
-注意它有多具体。它不是"遵循良好实践"。它命名三个文件、一条日志约定、一份具体检查表。通用 skill 是 Agent 本来就知道的。具体 skill 是真正改变行为的。
-
-一个成熟项目根目录有一份 `CLAUDE.md` / `AGENTS.md`，加十到四十条这样的具体 skill，每条覆盖 Agent 否则会搞错的一类任务。
-
-## 项目特定 skill——真正的资产
-
-真正把质量抬上去的 skill，是那些编码"**你的** Agent 在**你的**代码库里犯过的错"的 skill。几个例子，都由真实案例改写：
-
-- *"后台任务放在 `jobs/*.ts`，并且必须在 `jobs/retries.ts` 里注册重试策略。Agent 忘了注册两次；交付前永远检查这两个文件都改了。"*
-- *"React 组件在这个代码库里用 `styled-components`，不用 Tailwind。Agent 倾向于伸手抓 Tailwind，因为训练数据里大多数是那么写的。强制本地选择。"*
-- *"API 路由返回 `{ok, value}` 或 `{ok, error}` —— 不返回裸 payload，不在边界抛错。Agent 被告诉后一般会对；不告诉它会自己发明变体。"*
-- *"加一个新表时也要在 `test/fixtures/` 加 seed fixture，否则集成测试会悄悄失败。"*
-
-这些 skill 几乎尴尬地具体。这种具体性就是它们的价值。"遵守好命名约定"是无用的——Agent 本来就在试。"这个代码库的 handler 命名约定是 `handle<EntityName><Action>`——Agent 倾向写 `<entityName>Handler` 而写错"是金子。
-
-> **通用 skill 是默认配置。特定 skill 是磨合结晶所在。一个成熟项目有大约十条前者、四十条后者。**
-
-## 写一条值得留的 skill
-
-一条能活过第一个月的 skill 通常有这些特征：
-
-1. **它命名 Agent 实际犯的失败模式。** 不是抽象原则——是你注意到过两次的具体错。
-2. **它给 Agent 一条具体规则或检查，不是建议。** "在宣布完成前检查 `jobs/retries.ts` 里有这个 job 的注册"是可操作的。"小心后台任务"不是。
-3. **它有一个例子。** 一个短的对例子，最好来自代码库。失败模式微妙时再加一个反例。
-4. **它小。** 五行，不是五十行。试图覆盖太多的 skill 会被 Agent 扫读，就像长文档被人类扫读一样。
-
-如果你在写一条五十行的 skill，你大概有三条 skill 挣扎着想出来。拆开。
+> **通用 skill 是默认配置。特定 skill 是磨合结晶所在。** 前者你写一次，后者你一次一个失败地积累。
 
 ## 三阶段执行流
 
@@ -186,13 +83,13 @@ skill 到位后，Agent 对一个功能的工作长这样：
 
 `zero-review/auto-dev` skill 把这个三阶段循环——架构设计、实现与验证、自审——编码成一条可跑 skill，包括 Ousterhout 衍生的设计原则和一份具体自审清单。值得一读，是"把工程纪律编码为 skill"的范例。
 
-*参考*：[`zero-review/auto-dev`](https://github.com/A7um/zero-review/tree/main/skills/auto-dev)
+*参考*：`[zero-review/auto-dev](https://github.com/A7um/zero-review/tree/main/skills/auto-dev)`
 
 ---
 
 ## 外部声音
 
-- **支持**：*A Philosophy of Software Design*（Ousterhout）仍是底层原则最好的单一来源。Anthropic 自己的 "skills" 文档把注入机制固化；Addy Osmani 的生命周期工程 skill 是一个带工作样例的库。
+- **支持**：*A Philosophy of Software Design*（Ousterhout）仍是底层原则最好的单一来源。Anthropic 的 [Agent Skills 文档](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview) 把注入机制固化。关于单份 skill 文档本身的写作工艺，参见 *[The Skill Design Book](https://github.com/A7um/SkillDesignBook)*。
 - **反驳**：基于规则的设计的批评者主张编码的原则会僵化成形式主义检查表、失去本意。这是真实风险，尤其对通用 skill。反驳是：项目特定的 skill 不泛化、因此不僵化——它们和它们所由之来的伤疤绑定。
 
 ## 下一章

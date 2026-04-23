@@ -125,42 +125,9 @@ Applied to test plans:
 
 This heuristic is the single practical instruction I'd most want a Phase 2 reader to internalize. The naive Phase 1 failure is to audit everything equally hard; the naive Phase 4 failure is to audit nothing. Triaging by complexity is the middle path that scales.
 
-## Agent-as-user testing
+## Agent-as-user testing for UI work
 
-Automated unit, integration, and E2E tests catch a lot. They don't catch:
-
-- bad copy
-- cluttered layout
-- slow interactions that feel slow but don't technically fail
-- error messages that are technically correct but useless
-- flows that work but require too many clicks
-
-For these, the agent can act as a user. Modern agents can drive a browser, take screenshots, fill forms, and report what the experience was like. The trick is to **make the agent play specific user roles**, because each role sees different things:
-
-- **Novice user**: only sees what's on screen. Doesn't know what a console is. Gives up after two failures. Writes reports like *"I clicked save and the page went blank for five seconds"* — not *"the init failed with a 500."*
-- **Power user**: actively looks for shortcuts, tries side paths, notices when a keyboard shortcut would help.
-- **Adversarial user**: tries malformed inputs, long strings, clicks in the wrong order, tries to break it.
-
-Each role exposes a different class of bug. A single "test this like a user" instruction collapses into a generic engineer voice and finds none of it. Forcing the agent to *only have the senses the role has* is what makes the reports useful.
-
-*Reference*: [`zero-review/auto-test`](https://github.com/A7um/zero-review/tree/main/skills/auto-test)
-
-## The full shape of the chapter, as a sequence
-
-The whole correctness loop, in order:
-
-1. Requirement spec (from Chapter 3)
-2. Test plan written from the spec, reviewed at complexity-triaged depth
-3. Architecture step (Chapter 5) produces module boundaries
-4. Agent writes implementation + test bodies
-5. Agent runs the full suite, debugs failures, re-runs until green
-6. Agent performs agent-as-user testing for UI-facing work
-7. Human inspects:
-   - the test plan coverage at complexity-triaged depth
-   - the agent-as-user reports
-   - the final green status
-
-Steps 4–6 are unattended. That's the whole point. Your attention goes to steps 2 and 7 — framing the contract, and confirming it closed.
+Automated unit, integration, and E2E tests miss the UI-layer complaints: bad copy, cluttered layout, error messages that are technically correct but useless, flows that "work" but require too many clicks. For these the agent can act as a user — driving a browser, filling forms, reporting what the experience was like. The single trick worth knowing: **make the agent play a specific named user role** (novice / power user / adversarial), and constrain it to *only the senses that role has*. A novice-role agent can only report "I clicked save and the page went blank for five seconds" — not "the init failed with a 500," because it can't see the console. That constraint is what makes the reports real-user-shaped instead of engineer-shaped. The implementation details live in [`zero-review/auto-test`](https://github.com/A7um/zero-review/tree/main/skills/auto-test).
 
 ## What you stop doing
 

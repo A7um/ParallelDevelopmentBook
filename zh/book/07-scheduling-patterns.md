@@ -10,12 +10,14 @@
 
 四种模式，从粗到细：
 
-| 模式 | 粒度 | 协调成本 | 适用阶段 |
-|---|---|---|---|
-| 1 | 跨独立项目 | 非常低 | 第 1 阶段及以上 |
-| 2 | 同一项目内不重叠功能 | 低（通过 `git worktree`） | 第 2 阶段及以上 |
-| 3 | 同一功能内不同事务类型 | 中 | 第 3 阶段及以上 |
-| 4 | 同一任务内拆子 Agent | 设置成本高，运行成本低 | 主要是第 3–4 阶段，前沿 |
+
+| 模式  | 粒度            | 协调成本                 | 适用阶段           |
+| --- | ------------- | -------------------- | -------------- |
+| 1   | 跨独立项目         | 非常低                  | 第 1 阶段及以上      |
+| 2   | 同一项目内不重叠功能    | 低（通过 `git worktree`） | 第 2 阶段及以上      |
+| 3   | 同一功能内不同事务类型   | 中                    | 第 3 阶段及以上      |
+| 4   | 同一任务内拆子 Agent | 设置成本高，运行成本低          | 主要是第 3–4 阶段，前沿 |
+
 
 你会同时用多种模式。一个忙周里的第四阶段工程师可能在三个项目上跑模式 1，在其中一个项目内部跑模式 2，在其中一个功能里跑模式 3。那已经是六个 Agent 在跑，还没动模式 4。
 
@@ -42,7 +44,7 @@
 
 **动作**：在同一代码库里，你有两三个互不触碰同一文件的功能。你用 `git worktree` 为每一个建独立目录，每个 checkout 不同分支，每个 worktree 里跑一个 Agent。它们不干扰是因为在分开的目录里。
 
-**`git worktree` 为什么重要**：多个 Agent 跑在同一 checkout 上很快变得一团糟。它们争着改工作树，测试重叠，一个 Agent 的 WIP 改动破坏另一个的测试跑。Worktree 给每个 Agent 自己的隔离目录同时绑到同一 repo，干净解决机械问题。
+`**git worktree` 为什么重要**：多个 Agent 跑在同一 checkout 上很快变得一团糟。它们争着改工作树，测试重叠，一个 Agent 的 WIP 改动破坏另一个的测试跑。Worktree 给每个 Agent 自己的隔离目录同时绑到同一 repo，干净解决机械问题。
 
 **流程**：
 
@@ -108,7 +110,7 @@ Cherny 报告同时跑 10 到 15 个 Claude Code session。那是一个经过深
 
 ## 范例——Geoffrey Huntley 的 Ralph 循环作为最小调度原语
 
-Ralph 循环在 [ghuntley.com/ralph](https://ghuntley.com/ralph/) 和 [`how-to-ralph-wiggum`](https://github.com/ghuntley/how-to-ralph-wiggum) 有公开记录，值得研究，因为它是有人发表过的**最简单可用的并行 Agent 调度器**。剥到最核心：
+Ralph 循环在 [ghuntley.com/ralph](https://ghuntley.com/ralph/) 和 `[how-to-ralph-wiggum](https://github.com/ghuntley/how-to-ralph-wiggum)` 有公开记录，值得研究，因为它是有人发表过的**最简单可用的并行 Agent 调度器**。剥到最核心：
 
 ```bash
 while :; do cat PROMPT.md | claude-code ; done
@@ -116,14 +118,14 @@ while :; do cat PROMPT.md | claude-code ; done
 
 那一行就是全部调度器。让它工作的是它依赖的东西：
 
-- **`PROMPT.md`** —— 一份确定性 prompt，告诉 Agent 在每次重新启动时查看 repo 状态、挑恰好一个让它能推进的任务。
-- **`specs/`** —— 规格目录，Agent 用来知道"完成"长什么样的可持久产物。
-- **`IMPLEMENTATION_PLAN.md`** —— Agent 在多次迭代之间读写的动态计划。
+- `**PROMPT.md**` —— 一份确定性 prompt，告诉 Agent 在每次重新启动时查看 repo 状态、挑恰好一个让它能推进的任务。
+- `**specs/**` —— 规格目录，Agent 用来知道"完成"长什么样的可持久产物。
+- `**IMPLEMENTATION_PLAN.md**` —— Agent 在多次迭代之间读写的动态计划。
 - **测试作为反向压力** —— Agent 不能 commit 一个测试失败的任务，所以坏状态自然地在那个任务上停下，直到被修好。
 
 每次迭代都是**全新**上下文窗口。没有对话历史在迭代之间传递。这刻意地阻止了 Huntley 命名的主要失败模式——"上下文腐败"：Agent 在几小时来回之后开始重复早期错误或漂离原任务。把上下文每轮扔掉，换来新鲜度的保证，代价是一点启动成本。
 
-Huntley 的 [`how-to-ralph-wiggum`](https://github.com/ghuntley/how-to-ralph-wiggum) 把循环进一步分为两种模式：
+Huntley 的 `[how-to-ralph-wiggum](https://github.com/ghuntley/how-to-ralph-wiggum)` 把循环进一步分为两种模式：
 
 - **规划模式** —— 读 `specs/` 和当前 `src/`，做差距分析，更新 `IMPLEMENTATION_PLAN.md`。
 - **建造模式** —— 读 `IMPLEMENTATION_PLAN.md`，挑最重要的任务，实现、跑测试、commit。
@@ -134,7 +136,7 @@ Huntley 的 [`how-to-ralph-wiggum`](https://github.com/ghuntley/how-to-ralph-wig
 
 ## 范例——Armin Ronacher 的 "Pi" 最小 harness（2026 年 1–2 月）
 
-如果 Ralph 是最简单调度原语，**Pi** 是相反动作的最干净范例：通过一个刻意最小化、Agent 可以自己修改的 harness 跑并行 Agent。Armin Ronacher 的三篇帖——[*Pi: The Minimal Agent Within OpenClaw*](https://lucumr.pocoo.org/2026/1/31/pi/)（1 月 31）、[*Porting MiniJinja to Go With an Agent*](https://lucumr.pocoo.org/2026/1/14/minijinja-go-port/)（1 月 14）、[*A Language For Agents*](https://lucumr.pocoo.org/2026/2/9/a-language-for-agents/)（2 月 9）——描述的工作流围绕：
+如果 Ralph 是最简单调度原语，**Pi** 是相反动作的最干净范例：通过一个刻意最小化、Agent 可以自己修改的 harness 跑并行 Agent。Armin Ronacher 的三篇帖——*[Pi: The Minimal Agent Within OpenClaw](https://lucumr.pocoo.org/2026/1/31/pi/)*（1 月 31）、*[Porting MiniJinja to Go With an Agent](https://lucumr.pocoo.org/2026/1/14/minijinja-go-port/)*（1 月 14）、*[A Language For Agents](https://lucumr.pocoo.org/2026/2/9/a-language-for-agents/)*（2 月 9）——描述的工作流围绕：
 
 - **微小核心**，只有四个工具（Read、Write、Edit、Bash）。其他一切都是 Agent 自己能写的扩展。
 - **自修改扩展。** Pi 热加载 Agent 在 session 里写的扩展——所以 Agent 真的在学任务的同时扩展自己的 harness。
@@ -152,11 +154,11 @@ Huntley 的 [`how-to-ralph-wiggum`](https://github.com/ghuntley/how-to-ralph-wig
 - **五个终端标签** 编号 1–5，每个跑一个 Claude Code session，通常在由 `claude -w` 创建的独立 worktree 上。
 - **另外五到十个 session** 跑在 `claude.ai` 浏览器标签上，用 `claude --teleport`（或 session 里的 `/teleport`）在终端和 web 之间移动 session。
 - **移动 session** 从他手机上启动和查看。
-- 每个 repo 根目录的 **`CLAUDE.md`**，每次 Agent 犯一次值得阻止的错就多一条。
+- 每个 repo 根目录的 `**CLAUDE.md`**，每次 Agent 犯一次值得阻止的错就多一条。
 - **Slash 命令** 处理交接里可重复的部分—— `/commit-push-pr` 一把完成 stage、commit、push、开 PR；定制的命令处理那个代码库里常见的工作流。
 - **Subagent** 做专门角色——code simplifier、test verifier——在主 session 里需要时被调起。
 - **生命周期钩子**—— `PreToolUse` 记录 shell 命令，`Stop` 在 Agent 早早宣布完成时让它继续跑。
-- **`/loop` 和 `/schedule`**—— 把工作流变成持久运行的 skill。Cherny 的例子是 `/loop 5m /babysit` 每 5 分钟跑一次维护任务。
+- `**/loop` 和 `/schedule`**—— 把工作流变成持久运行的 skill。Cherny 的例子是 `/loop 5m /babysit` 每 5 分钟跑一次维护任务。
 - **一个 Chrome 扩展** 让 Claude 看和点击它刚建的 UI —— Cherny 说这是 UI 工作质量的 2–3 倍乘数。
 - **系统通知** 只用于"Agent 需要输入"，绝不用于"Agent 完成"。这把 inbox 模式转成 pull 模式，是他配置里被抄得最多的一个细节。
 
