@@ -38,6 +38,32 @@ It is not useful for:
 - **Tasks with one right answer** (CRUD, bug fixes with a known cause). N attempts just wastes compute.
 - **Tasks where the contract itself is unclear.** Best-of-N finds variation on the implementation, not the spec. If the spec is wrong, all N attempts are wrong.
 
+## A concrete example — parallel attempts via git worktrees
+
+The cheapest way to run best-of-N on a real feature today is to combine cheap failure with mode 2 from Chapter 7. Concretely:
+
+```bash
+# Align requirements once, produce spec.md and prompt_plan.md.
+# (See Chapter 3's worked example — Harper Reed's flow.)
+
+# Now launch three parallel attempts at the same feature.
+git worktree add ../feature-attempt-a attempt-a
+git worktree add ../feature-attempt-b attempt-b
+git worktree add ../feature-attempt-c attempt-c
+
+# In attempt-a: hand the agent spec.md + prompt_plan.md with no extra instructions.
+# In attempt-b: same inputs, but prepend a hint that pushes toward a different
+#   architectural choice ("prefer a state machine here even if it feels heavy").
+# In attempt-c: same inputs, different agent entirely — e.g., Codex instead of
+#   Claude Code — to get a genuinely independent attempt.
+```
+
+Each attempt runs against the same test plan. Run them in parallel; wall-clock time is roughly the time of one attempt. When two or three have produced green suites, you read them side-by-side and pick.
+
+The diversity trick matters. Three runs of the same agent with the same prompt against the same spec converge to nearly identical output; you learn very little. The real leverage is when each attempt varies on *one* axis — the agent, the architectural hint, or the temperature — so the differences between the attempts carry information.
+
+Simon Willison's *[Embracing the parallel coding agent lifestyle](https://simonwillison.net/2025/Oct/5/parallel-coding-agents/)* and Mitchell Hashimoto's *[Vibing a Non-Trivial Ghostty Feature](https://mitchellh.com/writing/non-trivial-vibing)* both describe using parallel attempts against the same spec specifically to see *variance across agents* — which implementation seems cleaner, which caught an edge case the others missed. That variance is the product you are buying with the extra compute.
+
 ## The "exploration becomes the default" shift
 
 There's a second, subtler consequence of cheap failure that I think is more important than best-of-N itself.

@@ -35,6 +35,103 @@ But generic principles have a ceiling. An agent that "knows" these principles ca
 
 The generic skill can't catch these because they are **specific to your project**. Past the generic line, skills have to be yours.
 
+## How pioneers actually accumulate their skills
+
+Before the examples, it's worth looking at how people who are shipping this at scale actually grow their skill libraries — because none of them sat down and wrote them all up-front. The public record is consistent.
+
+- **Boris Cherny's practice, shared [here](https://www.threads.com/@blueviper.ai/post/DV0PiVsCZ_j/instead-of-running-one-ai-session-at-a-time-he-runs-to-claude-sessions-in) and summarized across interviews**: "Every time a mistake happens, the correction gets written into `CLAUDE.md`. Over time, it stops being a chat tool and starts becoming a system that learns your standards and never repeats the same error twice." That sentence is the entire strategy, compressed.
+- **Mitchell Hashimoto** describes the same discipline in [*My AI Adoption Journey*](https://mitchellh.com/writing/my-ai-adoption-journey): `AGENTS.md` files accumulate constraints, and deterministic hooks get added each time a class of failure is observed. He treats `AGENTS.md` as a living artifact, not a one-time write.
+- **Geoffrey Huntley's Ralph loop** relies on `PROMPT.md` and `AGENTS.md` as the deterministic context. His own guidance: "there is no perfect prompt; it must evolve through observation of the model's failure patterns." The workshop repo ([`how-to-ralph-wiggum`](https://github.com/ghuntley/how-to-ralph-wiggum)) is literally the evolving version of his own prompts, published as an artifact.
+- **Addy Osmani** in [*My LLM coding workflow going into 2026*](https://addyosmani.com/blog/ai-coding-workflow/) formalizes the same move as "Agent Skills" — portable packages (a folder with a `SKILL.md`) installable across projects, each one encoding a specific class of knowledge the agent otherwise forgets.
+
+Four engineers, four vocabularies, one practice: **write the correction down the first time it happens, and never teach the agent the same lesson twice.** The skill file is just the filing cabinet.
+
+### What a growing `CLAUDE.md` / `AGENTS.md` actually looks like
+
+The first version of your project-level file is going to be almost empty. That's fine. Here is a sketch of what the file looks like after a few weeks of real use — not from any one pioneer's project, but assembled from patterns that recur across Cherny's, Hashimoto's, and Huntley's published examples.
+
+```markdown
+# Project rules for agents
+
+## Always
+- Run `pnpm check` (typecheck + lint + test) before declaring a task complete. Do
+  not hand back until it is green.
+- For any new handler in `server/routes/*`, register it in `server/routes/index.ts`.
+  The agent has forgotten this registration 3 times. Always check both files.
+- Return `{ ok: true, value }` or `{ ok: false, error }` from route handlers.
+  Never throw across the route boundary. Never return raw payloads.
+
+## Never
+- Never add a new top-level dependency without asking. We maintain a tight
+  dependency list on purpose.
+- Never introduce a new styling approach. The codebase uses `styled-components`.
+  Do not reach for Tailwind, CSS modules, or inline styles even if it would be
+  easier locally.
+- Never edit `db/migrations/*` files that have already been merged to main. If
+  you need a change, create a new migration.
+
+## How this project is organized
+- Background jobs: define in `jobs/*.ts`, and register a retry policy in
+  `jobs/retries.ts`. Both files must be updated together.
+- Tests live next to implementation as `*.test.ts`. Integration tests live in
+  `test/integration/`. E2E is Playwright under `e2e/`.
+- Feature flags are read via `getFlag(name)` in `src/flags.ts`. Do not read
+  environment variables directly for feature gating.
+
+## Known hazards
+- `src/legacy/*` is being deprecated. Prefer not to add new references to it.
+  If you must, leave a `// TODO(legacy-migration)` comment with a one-line reason.
+- The `zod` version is pinned below its latest major because of an ongoing
+  incompatibility with our form library. Do not upgrade without checking.
+```
+
+Several things to notice. First, every rule has a *reason* attached, even if short. Without the reason, the agent's prior occasionally overrides the rule; with the reason, it holds. Second, the "Known hazards" section is explicitly *not* a rule list — it's context that prevents the agent from wandering into trouble. Third, almost every item in the file came from a specific mistake the agent made once. The "3 times" counter on the route-registration rule is not decorative — it's the receipt for why the rule exists.
+
+You would not write this file from scratch. You *accumulate* it, one failure at a time.
+
+### What a single `SKILL.md` looks like
+
+When a rule gets complex enough that it needs its own document — a specific workflow, a multi-step check, a structured output format — it graduates into a skill. Addy Osmani's [*My LLM coding workflow going into 2026*](https://addyosmani.com/blog/ai-coding-workflow/) and the full treatment in *[The Skill Design Book](https://github.com/A7um/SkillDesignBook)* describe the shape at length; a minimal example looks like this:
+
+```markdown
+---
+name: add-background-job
+description: Use when adding a new background job to this codebase. Covers the
+  three files that must be updated together, the retry policy rules, and the
+  observability requirements.
+---
+
+# Adding a background job
+
+## Triggers
+Use this skill when the task involves adding a new async/background job —
+anything that will run outside a request handler, on a queue, or on a schedule.
+
+## The three files that must change together
+1. `jobs/<name>.ts` — the job implementation. Must export a default function
+   with the signature `(ctx, payload) => Promise<void>`.
+2. `jobs/retries.ts` — must be updated with an entry for the new job. If the
+   job is safe to retry on any failure, use the `default` policy. Otherwise
+   specify `maxAttempts` and any errors that should *not* trigger retry.
+3. `jobs/index.ts` — export the new job so the scheduler can find it.
+
+## Observability
+Every job must log on start and finish with the job name and the payload ID
+(if any). Use `logger.info('job.start', { name, payloadId })` — the event
+names `job.start` and `job.finish` are convention-locked; do not rename them.
+
+## Self-check before you hand back
+- [ ] All three files above have been modified.
+- [ ] Retry policy is specified (default or explicit).
+- [ ] Log events match the convention.
+- [ ] A test exists at `jobs/<name>.test.ts`.
+- [ ] If the job writes to the DB, the test includes a failure + retry case.
+```
+
+Notice how specific this is. It doesn't say "follow good practices." It names three files, one log convention, and a concrete checklist. A generic skill is the one the agent already knows. A specific skill is the one that actually changes behavior.
+
+A mature project has one `CLAUDE.md` / `AGENTS.md` at the root and ten to forty of these specific skills, each covering a class of task that the agent otherwise gets wrong.
+
 ## Project-specific skills — the real asset
 
 The skills that actually move the quality needle are the ones that encode the mistakes *your* agent made *in your codebase*. Examples, all paraphrased from real cases:

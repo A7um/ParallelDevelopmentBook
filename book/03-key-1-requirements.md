@@ -26,6 +26,16 @@ The move: describe the feature as best you can in natural language, then — *be
 
 > Do not begin work. First, list every question you still have about this requirement. Include things that seem small or obvious. I'll answer them, and then you will ask me more questions based on my answers. Continue until you have no more.
 
+Harper Reed's widely-shared *[My LLM codegen workflow atm](https://harper.blog/2025/02/16/my-llm-codegen-workflow-atm/)* codified this exact move into a publishable prompt. He opens every project with:
+
+> Ask me one question at a time so we can develop a thorough, step-by-step spec for this idea. Each question should build on my previous answers, and our end goal is to have a detailed specification I can hand off to a developer. Let's do this iteratively and dig into every relevant detail. Remember, only one question at a time. Here's the idea: `<IDEA>`
+
+And closes with:
+
+> Now that we've wrapped up the brainstorming process, can you compile our findings into a comprehensive, developer-ready specification? Include all relevant requirements, architecture choices, data handling details, error handling strategies, and a testing plan so a developer can immediately begin implementation.
+
+The two-prompt pair produces a `spec.md` that is already in the right shape to feed into Chapter 4's test-plan step. Adopt his prompts verbatim if you don't want to roll your own; the mechanic is what matters, not the wording.
+
 The agent will produce a list. Some of the questions will feel pedantic. Most of them are the gaps you couldn't see. Answer them. Then:
 
 > Given my answers, list any new questions that have surfaced.
@@ -95,6 +105,53 @@ The output of requirement alignment is a document, not a conversation. The conve
 
 The last property is especially important. The whole reason you're doing this step is so the agent doesn't need you mid-execution. If the document doesn't answer the mid-execution questions, you haven't finished alignment — you've just delayed the conversation.
 
+## Worked example — Harper Reed's three-stage flow
+
+The single most-copied alignment workflow in public practice is the one Harper Reed published as *[My LLM codegen workflow atm](https://harper.blog/2025/02/16/my-llm-codegen-workflow-atm/)*. It's worth walking through end-to-end because it is a complete, runnable shape — not a sketch.
+
+**Stage 1 — Idea honing → `spec.md`.**
+Open a conversation with a capable general model (Reed uses ChatGPT 4o/o3; Claude and Gemini work equivalently). Paste:
+
+> Ask me one question at a time so we can develop a thorough, step-by-step spec for this idea. Each question should build on my previous answers, and our end goal is to have a detailed specification I can hand off to a developer. Let's do this iteratively and dig into every relevant detail. Remember, only one question at a time.
+>
+> Here's the idea: `<IDEA>`
+
+Answer the questions until the model stops finding new ones. Then close with:
+
+> Now that we've wrapped up the brainstorming process, can you compile our findings into a comprehensive, developer-ready specification? Include all relevant requirements, architecture choices, data handling details, error handling strategies, and a testing plan so a developer can immediately begin implementation.
+
+Save the output as `spec.md` in the repo. That file is the stable artifact — not the conversation that produced it.
+
+**Stage 2 — Planning → `prompt_plan.md` + `todo.md`.**
+Open a fresh session with a reasoning model (`o1`/`o3`/`r1` in Reed's setup). Paste the contents of `spec.md`, then:
+
+> Draft a detailed, step-by-step blueprint for building this project. Then, once you have a solid plan, break it down into small, iterative chunks that build on each other. Look at these chunks and then go another round to break it into small steps. Review the results and make sure that the steps are small enough to be implemented safely with strong testing, but big enough to move the project forward. Iterate until you feel that the steps are right sized for this project.
+>
+> From here you should have the foundation to provide a series of prompts for a code-generation LLM that will implement each step in a test-driven manner. Prioritize best practices, incremental progress, and early testing, ensuring no big jumps in complexity at any stage. Make sure that each prompt builds on the previous prompts, and ends with wiring things together. There should be no hanging or orphaned code that isn't integrated into a previous step.
+>
+> Make sure and separate each prompt section. Use markdown. Each prompt should be tagged as text using code tags. The goal is to output prompts, but context, etc is important as well.
+>
+> <SPEC>
+
+Save as `prompt_plan.md`. Then ask the same model: *"Can you make a `todo.md` that I can use as a checklist? Be thorough."*
+
+You now have three files in the repo — `spec.md` describing the feature, `prompt_plan.md` describing how it decomposes into test-driven steps, `todo.md` as the execution checklist.
+
+**Stage 3 — Execution.**
+Hand `prompt_plan.md` + `todo.md` to an execution agent (Aider, Cursor, Claude Code, Codex). The agent works through the checklist. Your involvement from here is complexity-triaged review, not implementation.
+
+The structural claim Reed's flow demonstrates: **requirement alignment produces three files, each with a distinct role, all living in the repo.** The conversations that produced them are disposable. The files are not.
+
+Addy Osmani's [*My LLM coding workflow going into 2026*](https://addyosmani.com/blog/ai-coding-workflow/) lands on nearly the same shape — his vocabulary is "spec → project plan → iterative refinement" — which is why I'm confident the pattern is structural rather than personal to Reed.
+
+## A second pattern worth stealing: specs-as-files
+
+Reed's workflow puts the output of the alignment step into `spec.md` and the planning output into `prompt_plan.md` + `todo.md`. Addy Osmani's [*My LLM coding workflow going into 2026*](https://addyosmani.com/blog/ai-coding-workflow/) lands on the same structure independently, and Geoffrey Huntley's Ralph loop is built on `PROMPT.md` plus a `specs/` directory. Three pioneers, three independent workflows, one shared move:
+
+> **The alignment artifact is a file, not a conversation.** Files are portable across agents, they survive session compaction, and they make "what we agreed" legible to a future sub-agent that wasn't present when you agreed it.
+
+If there's one thing you steal from this section, let it be that: the deliverable of requirement alignment is a document named `spec.md` (or whatever your project's convention is), sitting in the repo, referenced by every downstream step. The conversation is the means; the file is the artifact.
+
 ## Why requirement alignment cannot be parallelized
 
 Everything else in this book can be parallelized. Requirement alignment cannot. It requires:
@@ -139,10 +196,10 @@ The `zero-review/auto-req` skill is the author's concrete encoding of the two te
 
 ## External voices
 
-- **Supporting**: spec-first tools (Amazon's Kiro, various "spec-as-input" pipelines) and the `aider` architect/editor split both land on the same insight: separating specification from execution is the single highest-leverage structural move in agentic coding.
-- **Challenging**: some practitioners argue that spec-first is overkill for exploratory or prototype work, where the point is to discover the requirement by writing code. This critique is mostly right for Phase 1 prototyping and mostly wrong for anything that will be maintained.
-
-> TODO (author's note): pick your favorite links on spec-first development — particularly any on how Claude Code / Cursor users handle requirement capture.
+- **Supporting — the architect/editor split**: Aider's *[Separating code reasoning and editing](https://aider.chat/2024/09/26/architect.html)* (2024) is the cleanest articulation of the "specify first, implement second" pattern in a production tool. The Aider team showed measurable benchmark gains by pairing a reasoning model (the *architect*) with an editor model, which is the same structural move this chapter advocates at the human-agent boundary. Configuration details are in the [chat modes docs](https://aider.chat/docs/usage/modes.html).
+- **Supporting — "plan-first" from inside Anthropic**: Boris Cherny's workflow, summarized in the [Educative recap](https://www.educative.io/newsletter/artificial-intelligence/claude-code-creators-workflow), describes using *Plan Mode* checkpoints to validate intent before execution — essentially the one-shot question-loop described in this chapter, wired into the tool. His [Lenny's interview](https://www.lennysnewsletter.com/p/head-of-claude-code-what-happens) repeats the point: humans design intent, agents execute and verify.
+- **Supporting — harness, don't prompt**: Mitchell Hashimoto in *[My AI Adoption Journey](https://mitchellh.com/writing/my-ai-adoption-journey)* reports that `AGENTS.md`-style constraint documents plus deterministic hooks matter more than any individual prompt. Requirement alignment, in his framing, is partly a document the agent reads and partly a harness that catches the classes of mistake documents can't.
+- **Challenging — "requirements change until they don't"**: Hillel Wayne's *[Requirements change until they don't](https://buttondown.com/hillelwayne/archive/requirements-change-until-they-dont/)* is the right push-back on spec-first purism — when the requirement is genuinely fluid, heavy up-front specification is expensive and often wrong. His point does not invalidate this chapter's technique; it tightens the scope: use the deepest alignment on the parts of the requirement you believe won't move, and keep the mobile parts light.
 
 ## What's next
 

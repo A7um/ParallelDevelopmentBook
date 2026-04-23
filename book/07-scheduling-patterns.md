@@ -52,6 +52,8 @@ This is the "multiple meeting rooms" mode. You are the tech lead walking between
 4. Each agent runs through Chapters 3–5 independently.
 5. When an agent finishes, merge its branch back to main. Resolve merge conflicts — ideally by letting an agent handle the mechanical ones and handling strategy conflicts yourself.
 
+Claude Code ships a convenience shortcut for this: the `claude -w` flag (documented in Cherny's [15-tips roundup](https://www.reddit.com/r/ClaudeCode/comments/1s8oqfn/btw_boris_cherny_shared_15_new_tips_to_use_claude/)) automatically creates a worktree for an agent session, so you don't have to manage the worktree directory manually. If you're using a different agent, the shell commands above work identically; the mechanism is git's, not any specific tool's.
+
 **Rule of thumb on orthogonality**: if the two features mostly touch different files (say, <20% overlap), mode 2 works. If they heavily overlap (>50%), either serialize them or redesign the task boundaries. The time you lose to merge conflicts can easily erase the time you gained from parallelism.
 
 **Break-in prerequisite**: you need enough shared skills (Chapter 5) that two agents working in parallel will produce code in the same style. Without that, merge cleanup is dominated by stylistic inconsistency, which is demoralizing and hard to automate. This is why mode 2 mostly shows up in Phase 2+.
@@ -82,6 +84,8 @@ Claude Code's "team" mode and similar "orchestrator + workers" patterns implemen
 
 **Current state, being honest**: mode 4 is real — it works on scoped, well-specified tasks where the boundaries naturally decompose. On messy real-world tasks where the decomposition itself is the hard part, mode 4 often produces worse results than a single agent running sequentially, because the merge cost outweighs the parallelism gain.
 
+Cognition's [*Devin can now Manage Devins*](https://cognition.ai/blog/devin-can-now-manage-devins) describes their mode 4 implementation from the inside: a coordinator Devin scopes work and monitors progress while each delegated Devin runs in its own isolated VM. Crucially, the same team published [*Don't Build Multi-Agents*](https://cognition.ai/blog/dont-build-multi-agents) — the two are not contradictory. The second post is a warning against *naive* multi-agent patterns that don't share context; the first is an implementation that does. Their explicit principle: **"share context, not just messages"** and **"actions carry implicit decisions; conflicting decisions lead to failure."** If the top-level agent can't share its reasoning trace with sub-agents, and the sub-agents can't converge on compatible decisions, mode 4 degrades to exactly the "chaos" that most skeptical reports describe.
+
 **When it actually pays off**: the same conditions that make mode 3 work, but at a smaller granularity. If the architecture step (Chapter 5) has pinned down module boundaries clearly, and each sub-task fits inside a module, agent-internal decomposition is reliable. If the architecture is vague, it isn't.
 
 **The direct dependency on Chapter 5**: mode 4 is basically the payoff for doing architecture design well. A codebase with well-defined module boundaries and interface contracts is *automatically* amenable to parallel decomposition. A codebase where agents "code-as-they-design" isn't. This is the strongest practical argument for not skipping the architecture step, even when you're tempted.
@@ -96,9 +100,56 @@ A practical upper bound, roughly:
 - **Phase 3**: three to four agents comfortably. Five starts requiring deliberate attention discipline.
 - **Phase 4**: five to eight, with mode combinations. Past eight, even experienced engineers lose the thread.
 
+Cherny reports running ten to fifteen concurrent Claude Code sessions. That is the high end of what one deeply practiced operator does on a mature codebase; it is not a baseline. Read about his workflow ([Educative](https://www.educative.io/newsletter/artificial-intelligence/claude-code-creators-workflow)) and you see the supporting machinery — numbered terminal tabs, system notifications, a `/commit-push-pr` slash command, a Chrome extension that lets Claude test the UI it builds — that is specifically there to make fifteen agents manageable *by one attention*. Without that machinery, the upper bound drops sharply.
+
 The limiting factor is almost never agent compute or tooling. It's **your ability to keep context while rotating between tasks at the alignment and review stages**. Running too many agents produces more agents but worse decisions at the human-in-the-loop moments — which, from Chapter 1, is where the real bottleneck lives.
 
 > **The right number of parallel agents is the largest number where your alignment and review quality don't degrade.**
+
+## Worked example — Geoffrey Huntley's Ralph Loop as a minimal scheduling primitive
+
+The Ralph Loop, documented publicly at [ghuntley.com/ralph](https://ghuntley.com/ralph/) and in [`how-to-ralph-wiggum`](https://github.com/ghuntley/how-to-ralph-wiggum), is worth studying because it's the simplest functional parallel-agent scheduler anyone has published. Strip it down and it's this:
+
+```bash
+while :; do cat PROMPT.md | claude-code ; done
+```
+
+That one-liner is the whole scheduler. What makes it work is what it relies on:
+
+- **`PROMPT.md`** — a deterministic prompt that tells the agent, on each fresh invocation, to look at the state of the repo and pick exactly one task to make progress on.
+- **`specs/`** — the specification directory, the durable artifact the agent reads to know what "done" means.
+- **`IMPLEMENTATION_PLAN.md`** — a live plan the agent reads and updates across iterations.
+- **Tests as backpressure** — the agent cannot commit a task that fails tests, so a broken state naturally halts progress on that task until fixed.
+
+Each iteration is a *fresh* context window. No conversation history carries across. This deliberately prevents the "context rot" Huntley identifies as the main failure mode of long-running agent sessions — the thing where an agent, after several hours of back-and-forth, starts repeating earlier mistakes or drifting from its original task. By throwing away context every loop, you pay a small startup cost in return for guaranteed freshness.
+
+Huntley's [`how-to-ralph-wiggum`](https://github.com/ghuntley/how-to-ralph-wiggum) repo further splits the loop into two modes:
+
+- **Planning mode** — read `specs/` and the current `src/`, do gap analysis, update `IMPLEMENTATION_PLAN.md`.
+- **Building mode** — read `IMPLEMENTATION_PLAN.md`, pick the most important task, implement it, run tests, commit.
+
+You run planning periodically to keep the plan fresh against the spec, and building most of the time. This is a primitive version of the same *specification-then-execution* split that Aider's architect/editor mode implements inside a single session.
+
+Why is this in the scheduling chapter and not earlier? Because **Ralph is a mode-2/mode-3 scheduler implemented as a shell loop**, with no tool lock-in. You can run it against Claude Code, Codex, or any agent CLI. Two Ralph loops in two worktrees is mode 2. Two Ralph loops in the same worktree against different `PROMPT.md` files (one for backend, one for UI) is mode 3. It is worth understanding because every managed product (Claude Code's team mode, Cursor's background agents, Devin's managed Devins) is, at its core, some variant of this pattern with ergonomics on top.
+
+## Worked example — Cherny's fifteen-session setup
+
+On the other end of the aesthetic spectrum is Boris Cherny's publicly-shared workflow, which uses Claude Code's managed features rather than a bash loop. The setup, assembled from his [X thread](https://x.com/bcherny/status/2007179833990885678), his [15-tips roundup](https://www.reddit.com/r/ClaudeCode/comments/1s8oqfn/btw_boris_cherny_shared_15_new_tips_to_use_claude/), and the [Educative recap](https://www.educative.io/newsletter/artificial-intelligence/claude-code-creators-workflow), looks roughly like this:
+
+- **Five terminal tabs** numbered 1–5, each running a Claude Code session, typically on a separate worktree created via `claude -w`.
+- **Another five to ten sessions** running on `claude.ai` in browser tabs, with `claude --teleport` (or `/teleport` in-session) used to move a session between the terminal and the web as convenient.
+- **Mobile sessions** started and checked from his phone while away from the desk.
+- **`CLAUDE.md`** at the root of each repo, growing by one entry every time an agent makes a mistake worth preventing.
+- **Slash commands** for the repeatable parts of handoff — `/commit-push-pr` to stage + commit + push + open a PR in one shot, custom ones for the common workflows in that codebase.
+- **Subagents** for specialized roles — a code-simplifier, a test-verifier — invoked from the primary session when their role is needed.
+- **Lifecycle hooks** — `PreToolUse` to log shell commands, `Stop` to keep an agent running when it prematurely declares itself done.
+- **`/loop` and `/schedule`** — convert workflows into persistent, periodically-running skills. Cherny's example is `/loop 5m /babysit` to run a housekeeping task every five minutes.
+- **A Chrome extension** that lets Claude view and click through the UI it has just built — Cherny describes this as a 2–3× multiplier on UI work quality.
+- **System notifications** used only for "an agent needs input," never for "an agent finished." This converts the inbox pattern into a pull pattern and is the single most-copied detail of his setup.
+
+Notice what this setup is actually doing. The `CLAUDE.md` file is Key #3 encoded as a growing living document. The slash commands and hooks are alignment and handoff mechanization at the execution edges. The Chrome extension is agent-as-user testing from Chapter 4. The numbered tabs + notifications are the scheduling primitive. The `claude -w` worktree flag is mode 2. Cherny has essentially built the book's thesis into his daily ergonomics, and the fifteen-session throughput is the result.
+
+You do not need Claude Code's specific features to replicate this. Everything in the list above has a shell-script equivalent; Huntley's Ralph loop is an existence proof. The *pattern* of "mechanize the edges, rotate attention between middles" is what matters.
 
 ## A full-day example — mixed modes
 

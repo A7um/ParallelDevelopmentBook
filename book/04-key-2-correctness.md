@@ -25,6 +25,18 @@ That single sentence is the whole frame. The agent writes the code. The agent ru
 
 The human role has moved: from **reviewing implementations** (which you had to do because the agent's output might be wrong) to **reviewing the test plan** (which the agent couldn't have written without your taste and domain understanding in the first place).
 
+## The prompt that turns a spec into a test plan
+
+If you want the shortest path from "I have a `spec.md`" to "I have a test plan I can hand an agent," the planning prompt from Harper Reed's workflow is, in practice, the most widely-copied version. Paste `spec.md` into a reasoning model, then ask:
+
+> Draft a detailed, step-by-step blueprint for building this project. Then, once you have a solid plan, break it down into small, iterative chunks that build on each other. Look at these chunks and then go another round to break it into small steps. Review the results and make sure that the steps are small enough to be implemented safely with strong testing, but big enough to move the project forward. Iterate until you feel that the steps are right sized for this project.
+>
+> From here you should have the foundation to provide a series of prompts for a code-generation LLM that will implement each step in a test-driven manner. Prioritize best practices, incremental progress, and early testing, ensuring no big jumps in complexity at any stage. Make sure that each prompt builds on the previous prompts, and ends with wiring things together. There should be no hanging or orphaned code that isn't integrated into a previous step.
+
+The magic phrase is "implement each step in a test-driven manner." That single constraint forces the reasoning model to produce a plan where each step lands paired with a test, rather than producing a plan of implementation steps with tests bolted on afterward. The resulting `prompt_plan.md` is, structurally, a test plan in disguise — every step carries its verification contract with it.
+
+This is TPD as one artifact. You review `prompt_plan.md` at complexity-triaged depth before the execution agent touches any code.
+
 ## TPD vs TDD
 
 Test-driven development, in its classic red-green-refactor form, is a *human* discipline: one test at a time, one small behavior increment, tight feedback loop, the test exists to guide the writing.
@@ -43,6 +55,17 @@ TPD is not a replacement for TDD as an intellectual practice. It's a different s
 > **TDD is a programming discipline for humans. TPD is an acceptance contract for agents.**
 
 (The name "TPD" is a convenience coined to contrast with TDD. It isn't a term of art in the wider industry. Don't fight about the label.)
+
+## What pioneers are already doing
+
+TPD is not a novel invention; it's a name for something that has been independently converging in practitioner writing for a year.
+
+- **Harper Reed's [planning prompt](https://harper.blog/2025/02/16/my-llm-codegen-workflow-atm/)** — stage two of his workflow — tells the reasoning model: *"provide a series of prompts for a code-generation LLM that will implement each step in a test-driven manner. Prioritize best practices, incremental progress, and early testing."* The output is `prompt_plan.md`. Tests are not an afterthought; they are the *structure* of the plan.
+- **Simon Willison's [*Agentic Engineering Patterns*](https://simonw.substack.com/p/agentic-engineering-patterns)** (2026) leads with "Red/Green TDD" as a first-class pattern for agentic coding, explicitly because agents that write tests first "produce more reliable code and have a verifiable way to confirm their work."
+- **Geoffrey Huntley's Ralph loop** uses tests (and builds, and lints) as explicit *backpressure*: the bash loop does not advance past a task until tests pass. The loop is structurally incapable of declaring done against a failing suite.
+- **Mitchell Hashimoto, in [*My AI Adoption Journey*](https://mitchellh.com/writing/my-ai-adoption-journey)**, makes the point negatively: he treats failures not as one-offs but as occasions to add deterministic hooks and tests that *prevent the failure class from recurring*. Same move, applied to errors as they are discovered.
+
+The convergence is notable because these pioneers are not copying each other. Each arrived at "tests before code, suite runs as correctness boundary" as the obvious fix to the same underlying problem: line-by-line review is the thing that stops scaling first.
 
 ## What a good test plan covers
 
@@ -152,10 +175,10 @@ The `zero-review/auto-dev` skill encodes the TPD loop end-to-end, including the 
 
 ## External voices
 
-- **Supporting**: Kent Beck's original TDD essays frame "tests as specification" — exactly the move TPD inherits, just at coarser granularity. Geoffrey Huntley's "stop reviewing code" posts make the same case more bluntly.
-- **Challenging**: Hillel Wayne and others have argued persuasively that tests don't prove correctness — they demonstrate the absence of specific bugs. That critique applies here too. TPD does not prove correctness; it moves the human role from *reviewing implementations you can't fully trust* to *reviewing contracts you can meaningfully audit*. A better ratio; not a guarantee.
-
-> TODO (author's note): drop in links to "stop reviewing code" posts, any TDD classics you want to cite, and any war-story posts where someone discovered the tests-sharing-blind-spots failure mode.
+- **Supporting — Red/Green TDD as an agent pattern**: Simon Willison's *[Agentic Engineering Patterns](https://simonw.substack.com/p/agentic-engineering-patterns)* opens with "Red/Green TDD" as a first-class pattern for LLM-driven work — "by having agents write tests first, they produce more reliable code and have a verifiable way to confirm their work." That is TPD in miniature, and an independent rediscovery of this chapter's thesis.
+- **Supporting — stop reviewing, start engineering**: Geoffrey Huntley's [Ralph Loop writing](https://linearb.io/dev-interrupted/podcast/inventing-the-ralph-wiggum-loop) and his broader [ghuntley.com](https://ghuntley.com/) argue that line-by-line review is structurally obsolete once agents can self-verify; the engineer's job becomes designing guardrails — pre-commit hooks, property-based tests, snapshot tests — not reading diffs. The same move, from a different angle.
+- **Challenging — tests don't prove correctness**: Hillel Wayne's *[Why Don't People Use Formal Methods?](https://www.hillelwayne.com/post/why-dont-people-use-formal-methods/)* and *[Why TDD Isn't Crap](https://www.hillelwayne.com/post/why-tdd-isnt-crap/)* are the sharpest articulations of the limit this chapter acknowledges. Unit tests verify isolated components; complex behavior is emergent from interactions; testing is a *correctness toolkit* item, not a proof. TPD inherits this limit. The mitigation (human-reviewed test plans, complexity-triaged audits, agent-as-user testing) narrows the gap; it does not close it.
+- **Challenging — "you don't know if you have the right spec"**: Wayne again, on the fundamental verification problem: any test suite (or formal spec) is only as good as the requirement it encodes. If the agent writes the implementation and the tests from the same flawed understanding, both lock the mistake in. This is why this chapter insists that **test plans are reviewed before coding starts, written from the spec, not the implementation** — it's a direct response to Wayne's critique, not a disagreement with it.
 
 ## What's next
 

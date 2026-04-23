@@ -12,6 +12,8 @@ Parallel AI development is a leveraged position. Leverage amplifies returns, and
 
 Nobody selling AI productivity wants to say this. But if this book doesn't say it, it's not an honest book.
 
+Mitchell Hashimoto, in [*My AI Adoption Journey*](https://mitchellh.com/writing/my-ai-adoption-journey), is unusually clear about this side of the trade: he describes the adoption period as "excruciating" and ongoing parallel work as requiring deliberate notification discipline to avoid "expensive context switching." Armin Ronacher has repeatedly warned on X and in his [essays](https://tianpan.co/blog/2026-02-21-ai-coding-agent-best-practices) about *comprehension debt* — code that works but whose logic the human author can no longer explain. Research cited in Simon Willison's [*blogmarks*](https://simonwillison.net/dashboard/blogmarks-that-use-markdown/) (Ranganathan & Ye) found that AI does not reduce knowledge work so much as *intensify* it: developers juggle more active threads, not fewer. All three pioneers are working successfully at Phase 4; none of them describe the experience as relaxing.
+
 ## What exactly changed in your day
 
 Consider how a traditional engineer's day feels. You sit down with a task. You think for a minute, write some code, run it, think again, adjust. The cognitive profile is *mixed*: some minutes are intense (debugging a hard issue, getting the abstraction right), many minutes are semi-automatic (typing out the boilerplate you've typed ten thousand times, wiring up a form, writing a straightforward loop). Your hands and your brain alternate. When you're stuck, you have a half-automatic move — "let me try the obvious thing" — that your background cognition can carry out while your focus recovers.

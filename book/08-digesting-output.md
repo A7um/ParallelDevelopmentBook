@@ -79,10 +79,56 @@ This is, appropriately, another place where the break-in period shows up. The tr
 
 Short-term defenses you can deploy today, while the triage idea is still evolving:
 
-- **Batch your reading.** Don't look at agent reports as they land. Set two or three inbox-processing windows per day. Trying to treat reports like chat messages shatters your attention.
+- **Batch your reading.** Don't look at agent reports as they land. Set two or three inbox-processing windows per day. Trying to treat reports like chat messages shatters your attention. Mitchell Hashimoto [explicitly describes](https://mitchellh.com/writing/my-ai-adoption-journey) turning off notifications during deep work and running "end-of-day agents" that finish their reports overnight, so he reads batched output once rather than in real time.
 - **Force-structure reports at the source.** Every execution agent should produce reports in a consistent format: status, what was done, what failed, what needs your input, what can wait. A skill that enforces this format pays back immediately.
+- **Use system notifications only for "needs input," not for "done."** Cherny's setup, public on [X](https://x.com/bcherny/status/2007179833990885678), uses system notifications explicitly as the *bounce-back* signal — tell me only when an agent needs me, not when it finishes. This single change turns an inbox pattern into a pull pattern and is often the difference between "five agents feels like chaos" and "five agents feels like supervision."
 - **Be ruthless about the "what can wait" bucket.** Many reports need acknowledgment, not action. A one-line "logged, moving on" is often the right response.
 - **Maintain a visible queue.** A simple spreadsheet of open items, with agent source, date, and status, gives you a coarse triage layer even without an agent. Reviewing the queue once a day — rather than responding to each arrival — is already a big win.
+
+## A minimal structured-report skill
+
+One of the highest-leverage things you can add early, before any real triage layer exists, is a skill that forces every execution agent to end its work with a *structured* report. A minimal version:
+
+```markdown
+---
+name: end-of-task-report
+description: Use this skill at the end of every task, before declaring complete.
+  Produces a structured report the human (or triage agent) can consume quickly.
+---
+
+# End-of-task report
+
+At the end of every task, produce a report with exactly these sections:
+
+## Status
+One of: COMPLETE | NEEDS_INPUT | BLOCKED
+
+## What was done
+A bulleted list of the concrete changes made, one bullet per change. File
+paths in backticks. Past tense.
+
+## Tests
+- Which test suites were run, and the result (green / red / not run).
+- Any test that was expected to exist but was not found.
+
+## What I was unsure about
+Decisions I made where I chose a default but flagged the ambiguity. One bullet
+per decision, each with: the decision, the option I chose, and a one-line
+reason. Empty list is fine if nothing.
+
+## What needs human input
+Bulleted list of things I could not resolve without a human. Empty list is fine.
+
+## Follow-ups I would recommend
+Bulleted list of things I noticed that are out of scope for this task but
+probably should be addressed eventually. Empty list is fine.
+```
+
+That skill, loaded on every execution agent, turns twenty free-form reports into twenty reports with the same six sections. At that point a triage agent — or you, scanning by eye — can process the batch in a small fraction of the time, because you know *where in the report* to look for the parts you care about.
+
+This pattern is what Cherny's [`/commit-push-pr` slash command](https://x.com/bcherny/status/2007179833990885678) is structurally doing at a smaller scale: not just automating the commit, but forcing the PR description into a predictable shape so the person (or script) downstream of it can consume it without reading each one from scratch.
+
+> **Structured reports are the single biggest digestion-layer win you can deploy while the full triage layer is still maturing.** If you do nothing else from this chapter, do this.
 
 ## The second-order effect
 
