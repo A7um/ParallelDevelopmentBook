@@ -108,6 +108,20 @@ Each layer has a different sensitivity. Unit tests catch logic bugs. Integration
 
 A good test plan also names **what is *not* covered** — behaviors you're explicitly not testing (performance, rare concurrency paths, visual regressions). Naming non-coverage prevents the illusion of completeness.
 
+## The agent-operable environment — not optional for TPD
+
+TPD only works if the agent can **observe** the same reality your test plan asserts and **act** on failures without pulling you back into the loop. A reproducible **Docker** (or container-equivalent) image is the usual starting point — pinned dependencies, seeded data, one command to stand the stack up. Treat that image as part of the contract, checked in and versioned like code.
+
+**A frozen image is necessary but not sufficient.** The environment must also expose the **modalities** the acceptance criteria actually need. If you skip this, you get green CI on a hollow stub while the product path the spec cares about stays untested.
+
+- **Browser-backed products.** If users interact through a web UI, the agent (and your E2E harness) must have **real browser automation** inside the environment: a headed or headless browser the tool can drive, stable base URL, cookies/session fixtures as documented. "The container runs `npm test` but nothing can open `https://localhost:3000`" is a broken TPD surface — the agent cannot close the loop on layout, flows, or client-side regressions your plan names.
+- **GUI / native / desktop applications.** If correctness includes windows, menus, or native widgets, the environment must expose **GUI use** — e.g. a virtual display with documented remote access, or an agent-accessible desktop session — not only a CLI and unit tests. Otherwise the test plan will quietly omit the only channel where bugs show up.
+- **Complex or concurrent systems.** When failures are timing-dependent, stateful across processes, or require stepping through live code, **debugger access** (attach to the right process, breakpoints, inspect variables, capture stacks) must be available to the agent under the same constraints a senior engineer would use. Relying on `println` alone reintroduces you as the bottleneck the moment the suite goes red for a non-obvious reason.
+
+**Same bar for the Verifier.** An independent Verifier that cannot run the stack, drive the browser, or attach a debugger is verifying text against text — useful, but not a substitute for checking behavior in the modalities the spec promised.
+
+Document these capabilities in the repo (`compose.yaml`, `AGENTS.md`, or a short `docs/agent-environment.md`): how to start the environment, which ports expose HTTP, how to reach the browser driver, how to open a GUI session, how to attach the debugger. **If it is not documented and reachable by the agent, it is not part of your correctness contract — it is wishful thinking.**
+
 ## The hidden risk: tests and code sharing a blind spot
 
 This is the part almost nobody writes about. If the agent writes *both* the implementation *and* the tests from the same understanding of the requirement, and that understanding is wrong, **the tests will pass and the code will still be wrong**. The tests verify what the code does, not what it should do. They lock in the misunderstanding.
