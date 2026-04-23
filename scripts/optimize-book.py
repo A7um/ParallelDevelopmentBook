@@ -21,6 +21,7 @@ from __future__ import annotations
 import os
 import re
 import sys
+import tomllib
 from pathlib import Path
 
 BOOK_DIR = Path(os.environ.get("BOOK_DIR", "_book"))
@@ -102,6 +103,59 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>"""
+
+
+def repo_root_for_book_output(book_root: Path) -> Path:
+    """book_root is `_book` (English) or `_book/zh` (Chinese). Return repo root."""
+    if book_root.name == "zh" and book_root.parent.name == "_book":
+        return book_root.parent.parent
+    return book_root.parent
+
+
+def book_toml_for_output(book_root: Path) -> Path:
+    root = repo_root_for_book_output(book_root)
+    if book_root.name == "zh":
+        return root / "zh" / "book.toml"
+    return root / "book.toml"
+
+
+def load_site_url_prefix(book_root: Path) -> str | None:
+    """Read mdBook `[output.html] site-url` and return a prefix with trailing slash.
+
+    Used to rewrite relative `assets/*` image URLs to root-absolute paths so
+    figures resolve on GitHub Pages project sites (and any host where the book
+    is not served from `/`).
+    """
+    cfg_path = book_toml_for_output(book_root)
+    if not cfg_path.is_file():
+        return None
+    try:
+        data = tomllib.loads(cfg_path.read_text(encoding="utf-8"))
+    except tomllib.TOMLDecodeError:
+        return None
+    html_cfg = data.get("output", {}).get("html", {})
+    site_url = html_cfg.get("site-url", "")
+    if not isinstance(site_url, str) or not site_url.strip():
+        return None
+    site_url = site_url.strip()
+    if not site_url.endswith("/"):
+        site_url += "/"
+    # mdBook expects site-url to start with `/` for absolute-from-host paths.
+    if not site_url.startswith("/"):
+        site_url = "/" + site_url
+    return site_url
+
+
+def rewrite_asset_image_srcs(html: str, site_prefix: str | None) -> str:
+    """Turn `<img src="assets/...">` into root-absolute paths using site_prefix."""
+    if not site_prefix:
+        return html
+    # Avoid double-rewriting if optimize-book is re-run.
+    if f'src="{site_prefix}assets/' in html or f"src='{site_prefix}assets/" in html:
+        return html
+    html = html.replace('src="assets/', f'src="{site_prefix}assets/')
+    html = html.replace("src='assets/", f"src='{site_prefix}assets/")
+    return html
 
 
 def depth_to_root(html_path: Path, book_root: Path) -> str:
@@ -218,6 +272,12 @@ def generate_service_worker(book_root: Path, pages: list[Path]) -> None:
         if (book_root / extra).exists():
             precache.append(f"./{extra}")
 
+    assets_dir = book_root / "assets"
+    if assets_dir.is_dir():
+        for svg in sorted(assets_dir.glob("*.svg")):
+            rel = svg.relative_to(book_root).as_posix()
+            precache.append(f"./{rel}")
+
     precache_urls_literal = "[" + ", ".join(f'"{u}"' for u in precache) + "]"
     sw_content = SERVICE_WORKER_JS.replace("__PRECACHE_URLS__", precache_urls_literal)
     sw_content = sw_content.replace("__CACHE_VERSION__", SW_CACHE_VERSION)
@@ -225,23 +285,29 @@ def generate_service_worker(book_root: Path, pages: list[Path]) -> None:
 
 
 def main() -> int:
-    if not BOOK_DIR.exists():
-        print(f"error: {BOOK_DIR} does not exist — run `mdbook build` first", file=sys.stderr)
+    book_root = BOOK_DIR.resolve()
+    if not book_root.exists():
+        print(f"error: {book_root} does not exist — run `mdbook build` first", file=sys.stderr)
         return 1
 
-    pages = collect_pages(BOOK_DIR)
+    pages = collect_pages(book_root)
     if not pages:
         print("error: no HTML pages found in _book/", file=sys.stderr)
         return 1
 
-    print(f"optimize-book: {len(pages)} pages found in {BOOK_DIR}/")
+    print(f"optimize-book: {len(pages)} pages found in {book_root}/")
+
+    site_prefix = load_site_url_prefix(book_root)
+    if site_prefix:
+        print(f"optimize-book: site-url prefix {site_prefix!r} — rewriting asset image srcs")
 
     modified = 0
     skipped = 0
     for page in pages:
         html = page.read_text(encoding="utf-8")
-        prefix = depth_to_root(page, BOOK_DIR)
-        prefetch_block = build_prefetch_links(page, pages, BOOK_DIR)
+        html = rewrite_asset_image_srcs(html, site_prefix)
+        prefix = depth_to_root(page, book_root)
+        prefetch_block = build_prefetch_links(page, pages, book_root)
         preload_block = build_preload_links(prefix)
         new_html = inject_into_html(html, prefetch_block, preload_block)
         if new_html is None:
@@ -250,8 +316,16 @@ def main() -> int:
         page.write_text(new_html, encoding="utf-8")
         modified += 1
 
-    generate_service_worker(BOOK_DIR, pages)
-    sw_kb = (BOOK_DIR / "sw.js").stat().st_size / 1024
+    # Single-page print build is excluded from collect_pages; still fix figure paths.
+    print_html = book_root / "print.html"
+    if print_html.is_file():
+        ph = print_html.read_text(encoding="utf-8")
+        ph2 = rewrite_asset_image_srcs(ph, site_prefix)
+        if ph2 != ph:
+            print_html.write_text(ph2, encoding="utf-8")
+
+    generate_service_worker(book_root, pages)
+    sw_kb = (book_root / "sw.js").stat().st_size / 1024
 
     print(f"optimize-book: injected into {modified} pages (skipped {skipped})")
     print(f"optimize-book: wrote sw.js ({sw_kb:.1f} KB)")
