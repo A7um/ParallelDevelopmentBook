@@ -44,7 +44,7 @@ Mitchell Hashimoto's [*My AI Adoption Journey*](https://mitchellh.com/writing/my
 
 **Signal you're leaving Phase 3**: You start successfully running *more than three* agents concurrently on non-trivial work, and you don't spend the whole day context-switching. The scheduling patterns in Chapter 7 start feeling natural rather than effortful.
 
-Harper Reed's *[My LLM codegen workflow atm](https://harper.blog/2025/02/16/my-llm-codegen-workflow-atm/)* is a public Phase 3 artifact. What he published is not a clever trick — it's a *template* distilled from enough projects to know its shape. The idea-honing prompt, the blueprint prompt, the `todo.md` checklist: each of these is the crystallized form of something he had done ad-hoc several times before codifying. That's what Phase 3 looks like on the outside — you start being able to write down your own workflow, because it has stabilized enough to be describable.
+Harper Reed's [*My LLM codegen workflow atm*](https://harper.blog/2025/02/16/my-llm-codegen-workflow-atm/) — written in Feb 2025, ancestral to the current 2026 Plan Mode / SDD convention — is a public Phase 3 artifact from the previous practice era. What he published was not a clever trick; it was a *template* distilled from enough projects to know its shape. That's what Phase 3 looks like on the outside — you start being able to write down your own workflow because it has stabilized enough to be describable. (The current 2026 replacement — Chapter 3's Plan Mode + SDD shape — is the same pattern with verification contracts added; it didn't exist when Reed wrote his post.)
 
 ### Phase 4: Leverage
 

@@ -35,16 +35,19 @@ But generic principles have a ceiling. An agent that "knows" these principles ca
 
 The generic skill can't catch these because they are **specific to your project**. Past the generic line, skills have to be yours.
 
-## How pioneers actually accumulate their skills
+## How pioneers actually accumulate their skills (and what 2026 research says)
 
-Before the examples, it's worth looking at how people who are shipping this at scale actually grow their skill libraries — because none of them sat down and wrote them all up-front. The public record is consistent.
+The industry has standardized, in the six months before this writing, on `AGENTS.md` as the cross-tool context file. It is adopted by Claude Code (via `CLAUDE.md` symlink), Cursor, Codex, Gemini's antigravity, and most other major agents. The most useful current reference is [*How to Build Your AGENTS.md (2026)*](https://www.augmentcode.com/guides/how-to-build-agents-md) from the Augment team (March 2026).
 
-- **Boris Cherny's practice, shared [here](https://www.threads.com/@blueviper.ai/post/DV0PiVsCZ_j/instead-of-running-one-ai-session-at-a-time-he-runs-to-claude-sessions-in) and summarized across interviews**: "Every time a mistake happens, the correction gets written into `CLAUDE.md`. Over time, it stops being a chat tool and starts becoming a system that learns your standards and never repeats the same error twice." That sentence is the entire strategy, compressed.
-- **Mitchell Hashimoto** describes the same discipline in [*My AI Adoption Journey*](https://mitchellh.com/writing/my-ai-adoption-journey): `AGENTS.md` files accumulate constraints, and deterministic hooks get added each time a class of failure is observed. He treats `AGENTS.md` as a living artifact, not a one-time write.
-- **Geoffrey Huntley's Ralph loop** relies on `PROMPT.md` and `AGENTS.md` as the deterministic context. His own guidance: "there is no perfect prompt; it must evolve through observation of the model's failure patterns." The workshop repo ([`how-to-ralph-wiggum`](https://github.com/ghuntley/how-to-ralph-wiggum)) is literally the evolving version of his own prompts, published as an artifact.
-- **Addy Osmani** in [*My LLM coding workflow going into 2026*](https://addyosmani.com/blog/ai-coding-workflow/) formalizes the same move as "Agent Skills" — portable packages (a folder with a `SKILL.md`) installable across projects, each one encoding a specific class of knowledge the agent otherwise forgets.
+Several findings from the last six months are worth internalizing before you write yours:
 
-Four engineers, four vocabularies, one practice: **write the correction down the first time it happens, and never teach the agent the same lesson twice.** The skill file is just the filing cabinet.
+- **Keep it under about 150 lines.** ETH Zurich's Feb 2026 research (summarized in Paul Withers' *[Is AGENTS.md Engineering the next optimisation approach?](https://paulswithers.github.io/blog/2026/02/23/agentsmd-engineering/)*) found that verbose or LLM-generated `AGENTS.md` files actually *reduce* task success rates and inflate cost, because of "lost in the middle" degradation on long context. Human-curated, concise files perform measurably better.
+- **Nest for modularity.** Agents prioritize the `AGENTS.md` closest to the current working directory. Use a short root file for repo-wide rules, and drop focused `AGENTS.md` files into subdirectories that need different rules.
+- **Symlink for cross-tool compatibility.** The conventional 2026 move is `ln -s AGENTS.md CLAUDE.md` so every agent you use reads the same file regardless of its preferred name. This is now standard.
+- **Treat it like code.** Check it in, version-control it, review it in PRs. Mitchell Hashimoto's [*My AI Adoption Journey* (Feb 2026)](https://mitchellh.com/writing/my-ai-adoption-journey) treats `AGENTS.md` as a living contract updated every time a failure class is observed — not a one-time write.
+- **Skills are a separate channel.** Anthropic's [Agent Skills](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview) and Addy Osmani's [2026 writeup of the same pattern](https://beyond.addy.ie/2026-trends/) distinguish *always-loaded* context (`AGENTS.md`) from *loaded-on-demand* skills (`SKILL.md` in its own directory, triggered by task relevance). The split is significant because it lets you have fifty specialized skills without bloating every session.
+
+The 2026 consensus, compressed: **one lean `AGENTS.md` for durable repo-wide rules, a library of focused `SKILL.md` packages for task-specific workflows, both checked in, both versioned, both reviewed in PR.**
 
 ### What a growing `CLAUDE.md` / `AGENTS.md` actually looks like
 

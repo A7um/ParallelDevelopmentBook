@@ -1,156 +1,136 @@
 # Source Catalog
 
-A working bibliography for *The Parallel Development Book*. Every pioneer reference, tool link, and companion resource in one place.
+A working bibliography for *The Parallel Development Book*.
+
+**Currency policy**: this book's practices are sourced from the **last six months** of public writing at time of drafting — roughly October 2025 through April 2026. AI coding practice moves fast; what was leading-edge in early 2025 is often stale by late 2025. Sources older than six months are included only when (a) the underlying argument is structural and durable (e.g., Hillel Wayne on the limits of testing, Ousterhout on software design) or (b) the piece is the *ancestor* of a current practice and worth citing as history, in which case it is explicitly labeled as such.
+
+Every citation below is dated. If a date is in the past six months relative to April 2026, it is treated as current practice. If it is older, it is explicitly noted as *historical* or *durable structural reference*.
 
 ---
 
-## Companion Skills
+## Companion Artifacts
 
-The `zero-review` skills are the author's reference implementations of the mechanisms in Part III. They are not required reading, but they show what the three keys look like as runnable documents.
-
-- [`zero-review/auto-req`](https://github.com/A7um/zero-review/tree/main/skills/auto-req) — referenced in **Chapter 3**, requirement alignment.
-- [`zero-review/auto-dev`](https://github.com/A7um/zero-review/tree/main/skills/auto-dev) — referenced in **Chapters 4 and 5**, TPD loop + architecture + self-audit.
-- [`zero-review/auto-test`](https://github.com/A7um/zero-review/tree/main/skills/auto-test) — referenced in **Chapter 4**, agent-as-user testing.
-- [`zero-review/auto-triage`](https://github.com/A7um/zero-review/tree/main/skills/auto-triage) — referenced in **Chapter 8**, output digestion (in development).
-
-## Companion Book
-
-- [*The Skill Design Book*](https://github.com/A7um/SkillDesignBook) — the author's prior book on writing SKILL.md files for long-running agents. Essential background for readers who want to write their own skills as part of their break-in residue (Chapters 2 and 5).
+- [`zero-review/auto-req`](https://github.com/A7um/zero-review/tree/main/skills/auto-req) — referenced in **Chapter 3**.
+- [`zero-review/auto-dev`](https://github.com/A7um/zero-review/tree/main/skills/auto-dev) — referenced in **Chapters 4 and 5**.
+- [`zero-review/auto-test`](https://github.com/A7um/zero-review/tree/main/skills/auto-test) — referenced in **Chapter 4**.
+- [`zero-review/auto-triage`](https://github.com/A7um/zero-review/tree/main/skills/auto-triage) — referenced in **Chapter 8**.
+- [*The Skill Design Book*](https://github.com/A7um/SkillDesignBook) — the author's companion book on `SKILL.md` authorship. Essential background for **Chapter 5**.
 
 ---
 
-## Pioneer Voices and Their Practices
+## Current Practice (Oct 2025 – April 2026)
 
-Entries here are grouped by pioneer, with the specific artifacts cited in the book. Every practice quoted in the chapters is sourced from something in this list.
+### Spec-Driven Development and Plan Mode
 
-### Boris Cherny (creator of Claude Code, Anthropic)
+The dominant 2026 framework for requirement alignment and correctness contracts.
 
-The single most publicly-studied parallel-agent workflow at the time of writing. Cherny's practices show up in Chapters 1, 2, 5, 7, 8.
+- [*What Is Spec-Driven Development? A Practitioner's Guide for AI Coding*](https://www.augmentcode.com/guides/what-is-spec-driven-development) (Augment Code, **April 2026**) — defines the six-element spec and the Adversarial Agent Pattern. Cited in **Chapters 3, 4**.
+- [*Spec-Driven Development: From Code to Contract in the Age of AI Coding Assistants*](https://arxiv.org/abs/2602.00180) (arXiv, **Jan 2026**) — academic framing of SDD. Cited in **Chapter 3**.
+- [*Plan Mode in Claude Code*](https://codewithmukesh.com/blog/plan-mode-claude-code/) (**Feb 2026**) — 4-phase Explore/Plan/Implement/Commit cycle, one-sentence rule. Cited in **Chapters 3, 4**.
+- [*Claude Code Plan Mode: Complete Guide (2026)*](https://www.getaiperks.com/en/articles/claude-code-plan-mode) (**Mar 2026**) — more detailed Plan Mode reference.
 
-- [Boris Cherny's X thread on running 5 Claudes in parallel](https://x.com/bcherny/status/2007179833990885678) — the origin of the numbered-tabs + system-notifications pattern.
-- [*"Claude Code creator" reports 259 PRs in 30 days*](https://www.reddit.com/r/ClaudeAI/comments/1px44q0/claude_code_creator_boris_cherny_reports_a_full/) — the monthly throughput numbers cited in Chapter 2.
-- [15 Claude Code tips shared by Cherny](https://www.reddit.com/r/ClaudeCode/comments/1s8oqfn/btw_boris_cherny_shared_15_new_tips_to_use_claude/) — covers `claude --teleport`, `claude -w` (worktree), `/loop`, `/schedule`, hooks, and subagents.
-- [Educative — *Master this workflow from the creator of Claude Code*](https://www.educative.io/newsletter/artificial-intelligence/claude-code-creators-workflow) — the most thorough third-party writeup, including the Chrome extension for UI testing and the slash commands.
-- [*Boris Cherny's Claude Code Workflow That 5× Developer Productivity*](https://www.theautomated.co/p/boris-cherny-s-claude-code-workflow-that-5-developer-productivity) — secondary summary with useful consolidation.
-- [Threads summary — 10 to 15 Claude sessions in parallel with `CLAUDE.md` as learning substrate](https://www.threads.com/@blueviper.ai/post/DV0PiVsCZ_j/) — the clearest articulation of "every mistake, written back into `CLAUDE.md`."
-- [*Head of Claude Code: What happens after coding is solved*](https://www.lennysnewsletter.com/p/head-of-claude-code-what-happens) — Lenny's Newsletter podcast interview, Feb 2026.
-- [*Boris Cherny: "code is not the bottleneck"*](https://www.frenxt.com/cables/claude-code/cherny-01-origin-story) — origin story and philosophical stance.
+### AGENTS.md engineering
 
-### Simon Willison
+The 2026 cross-tool standard, replacing tool-specific `CLAUDE.md` / `.cursorrules`.
 
-Running record of one engineer's multi-year break-in; cited in Chapters 2, 4, 6, 9.
+- [*How to Build Your AGENTS.md (2026)*](https://www.augmentcode.com/guides/how-to-build-agents-md) (Augment Code, **March 2026**) — lean (<150 lines), nested, symlinked, version-controlled. Cited in **Chapter 5**.
+- [*Is "AGENTS.md Engineering" The Next Optimisation Approach?*](https://paulswithers.github.io/blog/2026/02/23/agentsmd-engineering/) (**Feb 2026**) — surveys the ETH Zurich research on context-file performance degradation. Cited in **Chapter 5**.
+- [Agents.md best practices gist](https://gist.github.com/0xfauzi/7c8f65572930a21efa62623557d83f6e) (**2026**) — working engineer's practical notes on symlinks and cross-tool compatibility.
+- [Anthropic Agent Skills documentation](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview) (**ongoing, materially updated late 2025**) — on-demand skill loading vs. always-loaded `AGENTS.md`. Cited in **Chapter 5**.
 
-- [ai-assisted-programming tag](https://simonwillison.net/tags/ai-assisted-programming/) — 345+ posts and counting; the real-time chronicle.
-- [*Embracing the parallel coding agent lifestyle*](https://simonwillison.net/2025/Oct/5/parallel-coding-agents/) — Oct 2025; the clearest public "I was wrong, here's why I changed my mind" piece.
-- [*Agentic Engineering Patterns*](https://simonw.substack.com/p/agentic-engineering-patterns) — 2026; opens with "Red/Green TDD" as a first-class agentic pattern.
-- [*Here's how I use LLMs to help me write code*](https://simonwillison.net/2025/Mar/11/using-llms-for-code/) — the "context is king" writeup.
-- [*An AI agent coding skeptic tries AI agent coding, in excessive detail*](https://simonwillison.net/2026/Feb/27/ai-agent-coding-in-excessive-detail/) — Willison's summary of Max Woolf's skeptic-turned-convert post.
+### Recent capability landmarks
 
-### Mitchell Hashimoto
+- [*Claude Opus 4.5 Unlocks the "No Restart" Workflow*](https://bytesizedbrainwaves.substack.com/p/claude-opus-45-unlocks-the-no-restart) (**Dec 2025**) — the capability that makes extended autonomous test-fix-test loops genuinely practical. Cited in **Chapter 4**.
+- [*The Parallel AI Workflow Developer Setup For 2026*](https://bobde-yagyesh.medium.com/the-parallel-ai-workflow-developer-setup-for-2026-5191f3d18e1a) (**March 2026**) — current concrete tooling survey: terminal tabs, worktrees, slash commands.
+- [*Best Tools for Running Parallel AI Coding Agents in 2026*](https://nimbalyst.com/blog/best-tools-for-running-parallel-ai-coding-agents/) (**March 2026**) — `ccmanager`, `dmux`, `agentree`, and other emerging orchestrators.
+- [*State of AI agent coders April 2026: agents vs skills vs workflows*](https://www.reddit.com/r/AI_Agents/comments/1sjk0fv/state_of_ai_agent_coders_april_2026_agents_vs/) (**April 2026**) — community snapshot of which abstractions still matter.
 
-The most honest public break-in memoir; cited in Chapters 2, 5, 8, 9.
+### Pioneer practices, last six months
 
-- [*My AI Adoption Journey*](https://mitchellh.com/writing/my-ai-adoption-journey) — the "excruciating period of inefficiency," the harness-engineering shift, `AGENTS.md` as a living artifact, end-of-day agents.
-- [*Vibing a Non-Trivial Ghostty Feature*](https://mitchellh.com/writing/non-trivial-vibing) — honest cost accounting for a real feature built with agents.
-- [Pragmatic Engineer — *Mitchell Hashimoto's new way of writing code*](https://newsletter.pragmaticengineer.com/p/mitchell-hashimoto) — long-form interview on daily workflow.
-- [Zed — *Agentic Engineering in Action with Mitchell Hashimoto*](https://zed.dev/blog/agentic-engineering-with-mitchell-hashimoto) — talk on maintaining architectural control, prompt-as-coaching, parallel work.
+Boris Cherny (Claude Code creator) — Dec 2025 X thread and tips:
+- [X thread on numbered-tab parallel workflow](https://x.com/bcherny/status/2007179833990885678) (**Nov 2025**). Cited in **Chapters 1, 7**.
+- [15 Claude Code tips shared by Cherny](https://www.reddit.com/r/ClaudeCode/comments/1s8oqfn/) (**Dec 2025**) — `claude -w`, `/teleport`, `/loop`, `/schedule`, hooks, subagents. Cited in **Chapter 7**.
+- [*Claude Code creator reports 259 PRs in 30 days*](https://www.reddit.com/r/ClaudeAI/comments/1px44q0/) (**Dec 2025**). Cited in **Chapters 1, 2**.
+- [Educative — *Master this workflow from the creator of Claude Code*](https://www.educative.io/newsletter/artificial-intelligence/claude-code-creators-workflow) (**Dec 2025** / early 2026). Cited in **Chapter 7**.
+- [*Head of Claude Code: What happens after coding is solved*](https://www.lennysnewsletter.com/p/head-of-claude-code-what-happens) (Lenny's Newsletter, **Feb 2026**).
 
-### Geoffrey Huntley
+Mitchell Hashimoto — Feb 2026 adoption memoir:
+- [*My AI Adoption Journey*](https://mitchellh.com/writing/my-ai-adoption-journey) (**Feb 5, 2026**). Three-phase arc (inefficiency → adequacy → workflow discovery). Cited in **Chapters 2, 5, 8, 9**.
+- [Pragmatic Engineer — *Mitchell Hashimoto's new way of writing code*](https://newsletter.pragmaticengineer.com/p/mitchell-hashimoto) (**Feb 2026**).
+- [Zed — *Agentic Engineering in Action with Mitchell Hashimoto*](https://zed.dev/blog/agentic-engineering-with-mitchell-hashimoto) (**2026**).
 
-The Ralph Loop and associated harness-building practice; cited in Chapters 1, 4, 7.
+Armin Ronacher — Jan–Feb 2026 Pi/OpenClaw series:
+- [*Pi: The Minimal Agent Within OpenClaw*](https://lucumr.pocoo.org/2026/1/31/pi/) (**Jan 31, 2026**). Cited in **Chapter 7**.
+- [*Porting MiniJinja to Go With an Agent*](https://lucumr.pocoo.org/2026/1/14/minijinja-go-port/) (**Jan 14, 2026**). Cited in **Chapter 7**.
+- [*A Language For Agents*](https://lucumr.pocoo.org/2026/2/9/a-language-for-agents/) (**Feb 9, 2026**) — comprehension debt. Cited in **Chapter 9**.
+- [Syntax.fm — *Pi, The AI Harness That Powers OpenClaw*](https://syntax.fm/show/976/pi-the-ai-harness-that-powers-openclaw-w-armin-ronacher-and-mario-zechner/transcript) (**Feb 2026**).
+- [*Armin Ronacher Leaning In To Find Out* — PyAI Conf 2026 talk](https://www.youtube.com/watch?v=8RHYyRUxVrA) (**2026**).
 
-- [*Ralph Wiggum as a "software engineer"*](https://ghuntley.com/ralph/) — the canonical description of the loop.
-- [`how-to-ralph-wiggum` repo](https://github.com/ghuntley/how-to-ralph-wiggum) — the runnable methodology, including the `PROMPT.md` and `specs/*` patterns and the planning/building split.
-- [*how to build a coding agent: free workshop*](https://ghuntley.com/agent/) — the argument that agents are "300 lines running in a loop."
-- [`how-to-build-a-coding-agent` workshop repo](https://github.com/ghuntley/how-to-build-a-coding-agent) — six progressive versions of a DIY coding agent.
-- [*I dream about AI subagents*](https://ghuntley.com/subagents/) — on context rot and the subagent pattern as a fix.
-- [Dev Interrupted — *Inventing the Ralph Wiggum Loop*](https://linearb.io/dev-interrupted/podcast/inventing-the-ralph-wiggum-loop) — podcast covering the philosophy.
-- [*AI Giants: What Everyone Gets Wrong About The Ralph Loop*](https://blog.codacy.com/what-everyone-gets-wrong-about-the-ralph-loop) — critical recap.
+Addy Osmani — Dec 2025 / 2026 workflow posts:
+- [*My LLM coding workflow going into 2026*](https://addyosmani.com/blog/ai-coding-workflow/) (**Dec 2025**). Cited in **Chapters 3, 5, 10**.
+- [*Top AI Coding Trends for 2026 — Beyond Vibe Coding*](https://beyond.addy.ie/2026-trends/) (**early 2026**) — Agent Skills formalization. Cited in **Chapter 5**.
 
-### Harper Reed
+Geoffrey Huntley — Ralph Loop methodology (ongoing, materially current):
+- [*Ralph Wiggum as a "software engineer"*](https://ghuntley.com/ralph/) (**ongoing / late 2025**). Cited in **Chapters 1, 4, 7**.
+- [`how-to-ralph-wiggum` repo](https://github.com/ghuntley/how-to-ralph-wiggum) (**maintained 2025–2026**).
+- [*how to build a coding agent: free workshop*](https://ghuntley.com/agent/).
+- [*I dream about AI subagents*](https://ghuntley.com/subagents/).
 
-The single most-copied public alignment workflow; cited in Chapters 1, 3, 4.
+Cognition / Devin — multi-agent principles:
+- [*Don't Build Multi-Agents*](https://cognition.ai/blog/dont-build-multi-agents) (**2025**, argumentative). Cited in **Chapter 7**.
+- [*Devin can now Manage Devins*](https://cognition.ai/blog/devin-can-now-manage-devins) (**2025–2026**). Cited in **Chapter 7**.
 
-- [*My LLM codegen workflow atm*](https://harper.blog/2025/02/16/my-llm-codegen-workflow-atm/) — the three-stage flow (idea honing → blueprint → execution), including verbatim prompts.
-- [*An LLM Codegen Hero's Journey*](https://harper.blog/2025/04/17/an-llm-codegen-heros-journey/) — the adoption-arc companion piece.
-
-### Addy Osmani
-
-Lifecycle engineering for AI-assisted development; cited in Chapters 3, 5, 10.
-
-- [*My LLM coding workflow going into 2026*](https://addyosmani.com/blog/ai-coding-workflow/) — the specs-first, human-director framing.
-- [*Top AI Coding Trends for 2026 — Beyond Vibe Coding*](https://beyond.addy.ie/2026-trends/) — formalization of Agent Skills as portable `SKILL.md` packages, and the Ralph Wiggum pattern as a generic primitive.
-
-### Armin Ronacher
-
-Honest accounts of comprehension debt and testing as the hardest problem; cited in Chapter 9.
-
-- [*The 80% Problem: Why AI Coding Agents Stall*](https://tianpan.co/blog/2026-02-21-ai-coding-agent-best-practices) — Ronacher-inspired writeup on assumption propagation and comprehension debt.
-- [Pi — Ronacher's minimal custom agent architecture experiments](https://www.linkedin.com/posts/peterfriese_armin-ronacher-details-the-architecture-of-activity-7431646543574700032-nYTJ) — the argument that SDK abstractions are premature.
-
-### Cognition / Devin
-
-The inside view on multi-agent architecture; cited in Chapter 7.
-
-- [*Don't Build Multi-Agents*](https://cognition.ai/blog/dont-build-multi-agents) — the context-sharing principles and warnings about naive multi-agent systems.
-- [*Devin can now Manage Devins*](https://cognition.ai/blog/devin-can-now-manage-devins) — the managed multi-agent implementation that followed.
-
-### Aider
-
-The architect/editor pattern; cited in Chapter 3.
-
-- [*Separating code reasoning and editing*](https://aider.chat/2024/09/26/architect.html) — the original writeup, including benchmark results.
-- [Chat modes documentation](https://aider.chat/docs/usage/modes.html) — usage details for architect mode.
-- [Aider blog](https://aider.chat/blog/) — ongoing updates.
+Simon Willison — ongoing practice blog:
+- [*Agentic Engineering Patterns*](https://simonw.substack.com/p/agentic-engineering-patterns) (**2026**) — Red/Green TDD as first-class agentic pattern. Cited in **Chapter 4**.
+- [*Embracing the parallel coding agent lifestyle*](https://simonwillison.net/2025/Oct/5/parallel-coding-agents/) (**Oct 5, 2025**) — skeptic-to-convert piece. Cited in **Chapter 2**.
 
 ---
 
-## Critical / Skeptical Voices (Deliberately Cited)
+## Historical Ancestors (pre-Oct 2025, included for context)
 
-- Harper Foley — [*Ten AI Agents Destroyed Production. Zero Postmortems.*](https://www.harperfoley.com/blog/ai-agents-destroyed-production-zero-postmortems) — the disaster catalog. Cited in **Chapter 1** as forecast of what happens when you skip mechanization.
-- Marc Nuri — [*The Missing Levels of AI-Assisted Development: From Agent Chaos to Orchestration*](https://blog.marcnuri.com/missing-levels-ai-assisted-development) — the "ladder becomes a drop" argument. Cited in **Chapters 1 and 2**.
-- Medium / Data Science Collective — [*Why AI Agents Keep Failing in Production*](https://medium.com/data-science-collective/why-ai-agents-keep-failing-in-production-cdd335b22219) — compounding-error analysis. Relevant to **Chapters 1 and 8**.
-- The Pragmatic Engineer — [*New trend: programming by kicking off parallel AI agents*](https://blog.pragmaticengineer.com/new-trend-programming-by-kicking-off-parallel-ai-agents/) — surveys skeptic-to-convert arc across multiple practitioners.
-- Reddit — [*Is "reviewing what parallel AI agents actually built" a better wedge?*](https://www.reddit.com/r/ClaudeAI/comments/1rzym3f/is_reviewing_what_parallel_ai_agents_actually/) — discussion of "agentic drift" and the review bottleneck.
+These are the 2024–early 2025 practices that led to the current consensus. Cite them as *history* — they are not current practice.
+
+- Harper Reed — [*My LLM codegen workflow atm*](https://harper.blog/2025/02/16/my-llm-codegen-workflow-atm/) (**Feb 2025**). The three-file pattern (`spec.md` + `prompt_plan.md` + `todo.md`) whose prompts are structurally still sound but whose lack of verification criteria and interface specification make it incomplete by 2026 SDD standards. Cited as ancestor in **Chapter 3**.
+- Aider — [*Separating code reasoning and editing*](https://aider.chat/2024/09/26/architect.html) (**Sep 2024**). The architect/editor split was the first production articulation of "specify first, implement second" — but the current consensus (Plan Mode + SDD + Adversarial Agent) has moved substantially beyond it. Not cited in current chapters.
 
 ---
 
-## Foundational Texts on Software Design
+## Skeptical / Critical Voices
 
-- John Ousterhout — *A Philosophy of Software Design*. Core source for the engineering-discipline principles encoded into skills in **Chapter 5** (deep modules, information hiding, layered abstraction, strategic vs tactical).
-- Kent Beck — *Test-Driven Development: By Example*. The TDD reference that TPD (**Chapter 4**) contrasts with.
-- Will Larson — *An Elegant Puzzle* and *Staff Engineer*. Background on the transition from "doing" to "deciding" that **Chapter 9** invokes.
+Deliberately engaged rather than avoided.
 
-## Hillel Wayne on the Limits of Testing
+- Harper Foley — [*Ten AI Agents Destroyed Production. Zero Postmortems.*](https://www.harperfoley.com/blog/ai-agents-destroyed-production-zero-postmortems) (**2025–2026**). Cited in **Chapter 1** as forecast of skipping mechanization.
+- Marc Nuri — [*The Missing Levels of AI-Assisted Development*](https://blog.marcnuri.com/missing-levels-ai-assisted-development) (**2025**). The "ladder becomes a drop" argument. Cited in **Chapters 1, 2**.
+- [*Why AI Agents Keep Failing in Production*](https://medium.com/data-science-collective/why-ai-agents-keep-failing-in-production-cdd335b22219) (Data Science Collective, **2026**) — compounding-error analysis.
+- [*The 80% Problem: Why AI Coding Agents Stall*](https://tianpan.co/blog/2026-02-21-ai-coding-agent-best-practices) (**Feb 2026**) — Ronacher-inspired analysis of assumption propagation and comprehension debt.
 
-Cited in **Chapter 4** as the sharpest public articulation of the limit that TPD inherits from any test-based approach.
+---
 
-- [*Why Don't People Use Formal Methods?*](https://www.hillelwayne.com/post/why-dont-people-use-formal-methods/)
-- [*Why TDD Isn't Crap*](https://www.hillelwayne.com/post/why-tdd-isnt-crap/)
-- [*Requirements change until they don't*](https://buttondown.com/hillelwayne/archive/requirements-change-until-they-dont/) — the cost-of-correctness argument cited in **Chapter 3**.
+## Durable Structural References (intentionally older)
 
-## Other Long-Form
+These are older than the six-month window but are cited for *structural* claims that do not become stale.
 
-- Ethan Mollick — *Co-Intelligence*. General framing for human-AI collaboration; touchpoint for **Chapter 10**.
+- John Ousterhout — *A Philosophy of Software Design* (**2018/2021**). Cited in **Chapter 5** for the core engineering-discipline principles.
+- Kent Beck — *Test-Driven Development: By Example* (**2002**). Cited in **Chapter 4** as the TDD reference TPD contrasts with.
+- Hillel Wayne on the limits of testing and formal methods (**2018–2024**). Cited in **Chapter 4**:
+  - [*Why Don't People Use Formal Methods?*](https://www.hillelwayne.com/post/why-dont-people-use-formal-methods/)
+  - [*Why TDD Isn't Crap*](https://www.hillelwayne.com/post/why-tdd-isnt-crap/)
+  - [*Requirements change until they don't*](https://buttondown.com/hillelwayne/archive/requirements-change-until-they-dont/) (cited in **Chapter 3**).
+- Will Larson — *An Elegant Puzzle*, *Staff Engineer*. Background for **Chapter 9**.
+- Ethan Mollick — *Co-Intelligence*. Touchpoint for **Chapter 10**.
 
 ---
 
 ## Tools Referenced
 
-- [**Cursor**](https://cursor.com) — primary development environment for most parallel workflows described in the book.
-- [**Claude Code**](https://www.anthropic.com/claude/code) — mentioned throughout; mode 4 reference in **Chapter 7**.
-- [**Codex**](https://openai.com/codex/) — alternative primary agent.
-- [**Devin**](https://devin.ai) — mentioned in Chapters 1, 5, 7.
-- [**Aider**](https://aider.chat) — architect/editor pattern, Chapter 3.
-- [**Playwright**](https://playwright.dev) — referenced in Chapter 7 for UI E2E testing in mode 3.
-- [**`git worktree`**](https://git-scm.com/docs/git-worktree) — core mechanism for **Chapter 7 Mode 2** and the best-of-N worked example in Chapter 6.
-
-## Research / Conceptual
-
-- Ranganathan & Ye — work intensification research cited via Simon Willison's [blogmarks](https://simonwillison.net/dashboard/blogmarks-that-use-markdown/); relevant to **Chapter 9**.
-- Literature on best-of-N sampling in LLMs. Relevant to **Chapter 6**.
-- Incident-management triage models (PagerDuty-style, ITIL). Relevant to **Chapter 8** analogy.
+- [**Cursor**](https://cursor.com)
+- [**Claude Code**](https://www.anthropic.com/claude/code)
+- [**Codex**](https://openai.com/codex/)
+- [**Devin**](https://devin.ai)
+- [**Pi / OpenClaw**](https://lucumr.pocoo.org/2026/1/31/pi/) — Ronacher's minimal harness, the mode 2/3 exemplar in **Chapter 7**.
+- [**Playwright**](https://playwright.dev)
+- [**`git worktree`**](https://git-scm.com/docs/git-worktree)
 
 ---
 
-*If you are reading this book on GitHub and know of a source that belongs here, pull requests are welcome.*
+*If you are reading this book on GitHub and know of a recent (<6 months) source that belongs here, pull requests are welcome.*

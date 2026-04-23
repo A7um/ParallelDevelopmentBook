@@ -128,11 +128,26 @@ Huntley's [`how-to-ralph-wiggum`](https://github.com/ghuntley/how-to-ralph-wiggu
 - **Planning mode** — read `specs/` and the current `src/`, do gap analysis, update `IMPLEMENTATION_PLAN.md`.
 - **Building mode** — read `IMPLEMENTATION_PLAN.md`, pick the most important task, implement it, run tests, commit.
 
-You run planning periodically to keep the plan fresh against the spec, and building most of the time. This is a primitive version of the same *specification-then-execution* split that Aider's architect/editor mode implements inside a single session.
+You run planning periodically to keep the plan fresh against the spec, and building most of the time. This is a primitive version of the same *specification-then-execution* split that Claude Code's Plan Mode (see Chapter 3) now implements as a tool primitive.
 
 Why is this in the scheduling chapter and not earlier? Because **Ralph is a mode-2/mode-3 scheduler implemented as a shell loop**, with no tool lock-in. You can run it against Claude Code, Codex, or any agent CLI. Two Ralph loops in two worktrees is mode 2. Two Ralph loops in the same worktree against different `PROMPT.md` files (one for backend, one for UI) is mode 3. It is worth understanding because every managed product (Claude Code's team mode, Cursor's background agents, Devin's managed Devins) is, at its core, some variant of this pattern with ergonomics on top.
 
-## Worked example — Cherny's fifteen-session setup
+## Worked example — Armin Ronacher's "Pi" minimal harness (Jan–Feb 2026)
+
+If the Ralph Loop is the simplest scheduling primitive, **Pi** is the cleanest example of the *opposite* move: running parallel agents through a deliberately minimalist harness that the agent can modify itself. Armin Ronacher's three posts — [*Pi: The Minimal Agent Within OpenClaw*](https://lucumr.pocoo.org/2026/1/31/pi/) (Jan 31), [*Porting MiniJinja to Go With an Agent*](https://lucumr.pocoo.org/2026/1/14/minijinja-go-port/) (Jan 14), and [*A Language For Agents*](https://lucumr.pocoo.org/2026/2/9/a-language-for-agents/) (Feb 9) — describe a workflow built around:
+
+- **A tiny core** of four tools only (Read, Write, Edit, Bash). Everything else is an extension the agent itself can write.
+- **Self-modifying extensions.** Pi hot-reloads extensions the agent writes during a session — so the agent genuinely extends its own harness as it learns the task.
+- **Branching as a first-class operation.** Pi lets Ronacher rewind an agent's session to an earlier message and branch off a new path — avoiding the failure mode he calls *vision quests*, where an agent re-does work from scratch because its earlier context has drifted.
+- **Language-agnostic reimplementation.** One of Ronacher's observations from the MiniJinja port: when code is cheap, it is often easier to have an agent *reimplement* a library in your target language than to wrangle cross-language build systems. This is a direct consequence of Chapter 6's cheap-failure principle.
+
+What matters for this chapter: **Pi is mode 2 and mode 3 implemented as a harness design rather than a tool feature.** It demonstrates that you can get strong parallelism without depending on any vendor's team mode — the primitives are cheap if you treat the harness as something you own.
+
+## Worked example — Cherny's fifteen-session setup (late 2025 snapshot)
+
+> **Currency note**: the specifics below come from Cherny's Dec 2025 public sharing. Claude Code has shipped substantial Plan Mode, subagents, and skills changes in the four months since; treat this as an *aesthetic* example of the pattern, not a current command reference.
+
+
 
 On the other end of the aesthetic spectrum is Boris Cherny's publicly-shared workflow, which uses Claude Code's managed features rather than a bash loop. The setup, assembled from his [X thread](https://x.com/bcherny/status/2007179833990885678), his [15-tips roundup](https://www.reddit.com/r/ClaudeCode/comments/1s8oqfn/btw_boris_cherny_shared_15_new_tips_to_use_claude/), and the [Educative recap](https://www.educative.io/newsletter/artificial-intelligence/claude-code-creators-workflow), looks roughly like this:
 

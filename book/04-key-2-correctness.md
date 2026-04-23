@@ -25,17 +25,29 @@ That single sentence is the whole frame. The agent writes the code. The agent ru
 
 The human role has moved: from **reviewing implementations** (which you had to do because the agent's output might be wrong) to **reviewing the test plan** (which the agent couldn't have written without your taste and domain understanding in the first place).
 
-## The prompt that turns a spec into a test plan
+## The Adversarial Agent Pattern — 2026 consensus for correctness
 
-If you want the shortest path from "I have a `spec.md`" to "I have a test plan I can hand an agent," the planning prompt from Harper Reed's workflow is, in practice, the most widely-copied version. Paste `spec.md` into a reasoning model, then ask:
+The cleanest current practice for correctness-as-contract is the **Adversarial Agent Pattern**, crystallized in the [Augment Code Spec-Driven Development guide (April 2026)](https://www.augmentcode.com/guides/what-is-spec-driven-development). It formalizes what several 2025 practitioners were doing ad-hoc, and — because it assigns the verification role to a *separate* agent with *different context and often a different model* — it directly addresses the blind-spot problem described later in this chapter.
 
-> Draft a detailed, step-by-step blueprint for building this project. Then, once you have a solid plan, break it down into small, iterative chunks that build on each other. Look at these chunks and then go another round to break it into small steps. Review the results and make sure that the steps are small enough to be implemented safely with strong testing, but big enough to move the project forward. Iterate until you feel that the steps are right sized for this project.
->
-> From here you should have the foundation to provide a series of prompts for a code-generation LLM that will implement each step in a test-driven manner. Prioritize best practices, incremental progress, and early testing, ensuring no big jumps in complexity at any stage. Make sure that each prompt builds on the previous prompts, and ends with wiring things together. There should be no hanging or orphaned code that isn't integrated into a previous step.
+The pattern has three roles:
 
-The magic phrase is "implement each step in a test-driven manner." That single constraint forces the reasoning model to produce a plan where each step lands paired with a test, rather than producing a plan of implementation steps with tests bolted on afterward. The resulting `prompt_plan.md` is, structurally, a test plan in disguise — every step carries its verification contract with it.
+- **Coordinator.** Reads the spec (from Chapter 3), decomposes it into sub-tasks, assigns them.
+- **Implementor(s).** One or more agents, each working on an isolated sub-task in its own git worktree. They cannot see each other's context — only the spec's interface contracts.
+- **Verifier.** A *separate* agent whose only job is to check each Implementor's output against the spec's verification criteria. It has not seen the implementation process — only the spec and the final diff.
 
-This is TPD as one artifact. You review `prompt_plan.md` at complexity-triaged depth before the execution agent touches any code.
+Model tiering has emerged as the convention: the most capable model writes the spec, a mid-tier model implements, and a fast low-cost model verifies. Cost-wise, this is cheaper than running your top model on everything. Correctness-wise, it is substantially *stronger* than a single agent writing code and its own tests, because the Verifier never shared an understanding with the Implementor — it can only check the spec against reality.
+
+This directly answers the concern you'll see below about "tests and code sharing a blind spot." When the Verifier is independent, a shared misunderstanding between the Implementor's implementation and the Implementor's tests still gets caught — because the Verifier is reading the spec fresh and checking what reality actually does against it.
+
+> **Adopt the Adversarial Agent Pattern explicitly for any non-trivial correctness surface.** Model it as three roles with three separate contexts. A single agent writing code *and* tests *and* grading itself is a regression, not a workflow.
+
+### The prompt that turns a spec into a test plan
+
+If your tool doesn't have a built-in Verifier role, you can still create one manually — start a fresh session with *only* the spec loaded (no implementation context), and ask:
+
+> You are the Verifier. You will receive a spec and a diff. Your job: for each verification criterion in the spec, state whether the diff satisfies it (YES / NO / PARTIAL), and for each NO or PARTIAL, cite the specific file and behavior that falls short. You do not have access to the Implementor's reasoning — only the spec, the diff, and the repo as-shipped. Prefer skepticism over agreement.
+
+That prompt, paired with the six-element spec from Chapter 3, is the minimum viable Verifier. It is an hour of work to set up and catches a meaningful percentage of the "implementation drifted from spec, but the Implementor's own tests passed" failures.
 
 ## TPD vs TDD
 
@@ -56,16 +68,17 @@ TPD is not a replacement for TDD as an intellectual practice. It's a different s
 
 (The name "TPD" is a convenience coined to contrast with TDD. It isn't a term of art in the wider industry. Don't fight about the label.)
 
-## What pioneers are already doing
+## What pioneers are already doing (last six months)
 
-TPD is not a novel invention; it's a name for something that has been independently converging in practitioner writing for a year.
+Current practice — pinned explicitly to the November 2025 through April 2026 window:
 
-- **Harper Reed's [planning prompt](https://harper.blog/2025/02/16/my-llm-codegen-workflow-atm/)** — stage two of his workflow — tells the reasoning model: *"provide a series of prompts for a code-generation LLM that will implement each step in a test-driven manner. Prioritize best practices, incremental progress, and early testing."* The output is `prompt_plan.md`. Tests are not an afterthought; they are the *structure* of the plan.
-- **Simon Willison's [*Agentic Engineering Patterns*](https://simonw.substack.com/p/agentic-engineering-patterns)** (2026) leads with "Red/Green TDD" as a first-class pattern for agentic coding, explicitly because agents that write tests first "produce more reliable code and have a verifiable way to confirm their work."
-- **Geoffrey Huntley's Ralph loop** uses tests (and builds, and lints) as explicit *backpressure*: the bash loop does not advance past a task until tests pass. The loop is structurally incapable of declaring done against a failing suite.
-- **Mitchell Hashimoto, in [*My AI Adoption Journey*](https://mitchellh.com/writing/my-ai-adoption-journey)**, makes the point negatively: he treats failures not as one-offs but as occasions to add deterministic hooks and tests that *prevent the failure class from recurring*. Same move, applied to errors as they are discovered.
+- **Mitchell Hashimoto, in [*My AI Adoption Journey* (Feb 2026)](https://mitchellh.com/writing/my-ai-adoption-journey)**, treats failures as occasions to add *deterministic hooks* and tests that prevent the failure class from recurring. The tests are not a development byproduct — they're the permanent harness.
+- **The Opus 4.5 "No Restart" workflow**, documented in [*Claude Opus 4.5 Unlocks the "No Restart" Workflow* (Dec 2025)](https://bytesizedbrainwaves.substack.com/p/claude-opus-45-unlocks-the-no-restart), makes extended autonomous test-fix-test-fix loops practical for the first time. The implication is direct: if the agent can run a suite, debug failures, and re-run without losing context for hours, you genuinely can stop reading the diff.
+- **Geoffrey Huntley's Ralph loop** uses tests (and builds, and lints) as explicit *backpressure*: the loop is structurally incapable of advancing past a failing suite. Documentation current through [late 2025](https://ghuntley.com/ralph/).
+- **Claude Code's Plan Mode**, formalized across late 2025 and early 2026 ([2026 complete guide](https://codewithmukesh.com/blog/plan-mode-claude-code/)), bakes the "plan before code, verify against plan" loop into the tool itself. You're no longer applying TPD on top of a generic chatbot; the tool now enforces it.
+- **The Adversarial Agent Pattern** (above) is the consensus formalization. Separate Implementor from Verifier, tier models by role, never let one agent grade its own work.
 
-The convergence is notable because these pioneers are not copying each other. Each arrived at "tests before code, suite runs as correctness boundary" as the obvious fix to the same underlying problem: line-by-line review is the thing that stops scaling first.
+The convergence is notable because these practitioners are not copying each other. Each arrived at "tests before code, verification by a role that didn't write the code" as the obvious fix to the same underlying problem: line-by-line review is the thing that stops scaling first.
 
 ## What a good test plan covers
 
@@ -175,10 +188,11 @@ The `zero-review/auto-dev` skill encodes the TPD loop end-to-end, including the 
 
 ## External voices
 
-- **Supporting — Red/Green TDD as an agent pattern**: Simon Willison's *[Agentic Engineering Patterns](https://simonw.substack.com/p/agentic-engineering-patterns)* opens with "Red/Green TDD" as a first-class pattern for LLM-driven work — "by having agents write tests first, they produce more reliable code and have a verifiable way to confirm their work." That is TPD in miniature, and an independent rediscovery of this chapter's thesis.
-- **Supporting — stop reviewing, start engineering**: Geoffrey Huntley's [Ralph Loop writing](https://linearb.io/dev-interrupted/podcast/inventing-the-ralph-wiggum-loop) and his broader [ghuntley.com](https://ghuntley.com/) argue that line-by-line review is structurally obsolete once agents can self-verify; the engineer's job becomes designing guardrails — pre-commit hooks, property-based tests, snapshot tests — not reading diffs. The same move, from a different angle.
-- **Challenging — tests don't prove correctness**: Hillel Wayne's *[Why Don't People Use Formal Methods?](https://www.hillelwayne.com/post/why-dont-people-use-formal-methods/)* and *[Why TDD Isn't Crap](https://www.hillelwayne.com/post/why-tdd-isnt-crap/)* are the sharpest articulations of the limit this chapter acknowledges. Unit tests verify isolated components; complex behavior is emergent from interactions; testing is a *correctness toolkit* item, not a proof. TPD inherits this limit. The mitigation (human-reviewed test plans, complexity-triaged audits, agent-as-user testing) narrows the gap; it does not close it.
-- **Challenging — "you don't know if you have the right spec"**: Wayne again, on the fundamental verification problem: any test suite (or formal spec) is only as good as the requirement it encodes. If the agent writes the implementation and the tests from the same flawed understanding, both lock the mistake in. This is why this chapter insists that **test plans are reviewed before coding starts, written from the spec, not the implementation** — it's a direct response to Wayne's critique, not a disagreement with it.
+- **Supporting — the Adversarial Agent Pattern**: the [Augment Code SDD practitioner's guide (April 2026)](https://www.augmentcode.com/guides/what-is-spec-driven-development) is the definitive current reference for the Coordinator / Implementors / Verifier split with model tiering. The Jan 2026 [*Spec-Driven Development* paper](https://arxiv.org/abs/2602.00180) is the academic companion.
+- **Supporting — extended autonomous loops**: Opus 4.5's [No Restart workflow](https://bytesizedbrainwaves.substack.com/p/claude-opus-45-unlocks-the-no-restart) (Dec 2025) is the capability that makes TPD-style unattended test-fix-test-fix loops genuinely practical at scale.
+- **Supporting — stop reviewing, start engineering**: Geoffrey Huntley's [Ralph Loop](https://ghuntley.com/ralph/) argues that line-by-line review is structurally obsolete once agents can self-verify against backpressure; the engineer's job becomes designing guardrails — pre-commit hooks, property-based tests, snapshot tests — not reading diffs.
+- **Challenging — tests don't prove correctness**: Hillel Wayne's [*Why Don't People Use Formal Methods?*](https://www.hillelwayne.com/post/why-dont-people-use-formal-methods/) remains the sharpest articulation of the limit TPD inherits. The Adversarial Agent Pattern narrows the gap considerably (independent Verifier, spec as contract) but does not close it. For genuinely high-stakes correctness surfaces, testing remains a *correctness toolkit* item, not a proof.
+- **Challenging — "you don't know if you have the right spec"**: Wayne's fundamental verification problem — any test suite is only as good as the requirement it encodes — is why the 2026 consensus spec has six mandatory elements (Chapter 3) rather than three. Verification criteria without explicit outcomes and constraints still lock misunderstandings in.
 
 ## What's next
 

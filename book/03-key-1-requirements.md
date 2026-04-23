@@ -26,7 +26,7 @@ The move: describe the feature as best you can in natural language, then — *be
 
 > Do not begin work. First, list every question you still have about this requirement. Include things that seem small or obvious. I'll answer them, and then you will ask me more questions based on my answers. Continue until you have no more.
 
-Harper Reed's widely-shared *[My LLM codegen workflow atm](https://harper.blog/2025/02/16/my-llm-codegen-workflow-atm/)* codified this exact move into a publishable prompt. He opens every project with:
+Harper Reed's widely-copied Feb 2025 post [*My LLM codegen workflow atm*](https://harper.blog/2025/02/16/my-llm-codegen-workflow-atm/) (ancestral to today's Plan Mode consensus) codified this exact move into a publishable prompt. The prompts remain structurally sound and still circulate in 2026 practice. He opens every project with:
 
 > Ask me one question at a time so we can develop a thorough, step-by-step spec for this idea. Each question should build on my previous answers, and our end goal is to have a detailed specification I can hand off to a developer. Let's do this iteratively and dig into every relevant detail. Remember, only one question at a time. Here's the idea: `<IDEA>`
 
@@ -105,44 +105,38 @@ The output of requirement alignment is a document, not a conversation. The conve
 
 The last property is especially important. The whole reason you're doing this step is so the agent doesn't need you mid-execution. If the document doesn't answer the mid-execution questions, you haven't finished alignment — you've just delayed the conversation.
 
-## Worked example — Harper Reed's three-stage flow
+## Worked example — the 2026 Plan Mode + Spec-Driven Development flow
 
-The single most-copied alignment workflow in public practice is the one Harper Reed published as *[My LLM codegen workflow atm](https://harper.blog/2025/02/16/my-llm-codegen-workflow-atm/)*. It's worth walking through end-to-end because it is a complete, runnable shape — not a sketch.
+The industry has converged, in the six months before this chapter was written, on a specific shape for requirement alignment. It goes by two names that refer to the same structural move: **Plan Mode** (in tool vocabulary — Claude Code, Cursor's planning step, Gemini's antigravity) and **Spec-Driven Development (SDD)** (in methodology vocabulary — see the [Augment Code practitioner's guide, April 2026](https://www.augmentcode.com/guides/what-is-spec-driven-development) and the Jan 2026 [arxiv paper of the same name](https://arxiv.org/abs/2602.00180)).
 
-**Stage 1 — Idea honing → `spec.md`.**
-Open a conversation with a capable general model (Reed uses ChatGPT 4o/o3; Claude and Gemini work equivalently). Paste:
+Both crystallize a pattern earlier practitioners were hand-rolling in 2025. The authoritative shape today is a four-phase cycle, well-documented in the [*Plan Mode in Claude Code* guide (Feb 2026)](https://codewithmukesh.com/blog/plan-mode-claude-code/) and [Addy Osmani's late-2025 workflow post](https://addyosmani.com/blog/ai-coding-workflow/):
 
-> Ask me one question at a time so we can develop a thorough, step-by-step spec for this idea. Each question should build on my previous answers, and our end goal is to have a detailed specification I can hand off to a developer. Let's do this iteratively and dig into every relevant detail. Remember, only one question at a time.
->
-> Here's the idea: `<IDEA>`
+**Phase 1 — Explore (read-only).** Enter the agent's Plan Mode — a read-only context where it can grep the codebase, map dependencies, and read specs, but cannot modify files. You narrate what you want; the agent explores the terrain and surfaces what it already knows and what it needs to ask. This is where Technique 1's exhaustive-questioning loop runs.
 
-Answer the questions until the model stops finding new ones. Then close with:
+**Phase 2 — Plan (spec + implementation plan).** The agent produces an implementation plan against the spec. In SDD vocabulary, a plan-ready spec now requires six concrete elements (paraphrased from the [Augment guide](https://www.augmentcode.com/guides/what-is-spec-driven-development)):
 
-> Now that we've wrapped up the brainstorming process, can you compile our findings into a comprehensive, developer-ready specification? Include all relevant requirements, architecture choices, data handling details, error handling strategies, and a testing plan so a developer can immediately begin implementation.
+1. *Outcomes and scope* — what to build, explicit about what's out.
+2. *Constraints and prior decisions* — hard pins on libraries, schemas, non-negotiables, so the agent doesn't re-invent them.
+3. *Task breakdown* — decomposition into discrete sub-tasks small enough to fit one context.
+4. *Verification criteria* — explicit, testable acceptance conditions for each sub-task. These become the contract for a separate Verifier agent in Chapter 4.
+5. *Interfaces between sub-tasks* — so that parallel execution (Chapter 7) becomes safe.
+6. *Model tiering* — which roles use which models. Current 2026 convention: use your most capable model for *spec writing*, mid-range for *implementation*, fast/cheap for *verification*.
 
-Save the output as `spec.md` in the repo. That file is the stable artifact — not the conversation that produced it.
+Write the spec to a file — the community has largely unified on `docs/plans/<feature>.md` or `spec.md` in the feature worktree. `AGENTS.md` (covered in Chapter 5) references it. The conversation that produced it is disposable; the file is not.
 
-**Stage 2 — Planning → `prompt_plan.md` + `todo.md`.**
-Open a fresh session with a reasoning model (`o1`/`o3`/`r1` in Reed's setup). Paste the contents of `spec.md`, then:
+**Phase 3 — Implement (small chunks).** Hand the plan to an execution agent. The agent works one sub-task at a time, with the spec's verification criteria as its red/green signal.
 
-> Draft a detailed, step-by-step blueprint for building this project. Then, once you have a solid plan, break it down into small, iterative chunks that build on each other. Look at these chunks and then go another round to break it into small steps. Review the results and make sure that the steps are small enough to be implemented safely with strong testing, but big enough to move the project forward. Iterate until you feel that the steps are right sized for this project.
->
-> From here you should have the foundation to provide a series of prompts for a code-generation LLM that will implement each step in a test-driven manner. Prioritize best practices, incremental progress, and early testing, ensuring no big jumps in complexity at any stage. Make sure that each prompt builds on the previous prompts, and ends with wiring things together. There should be no hanging or orphaned code that isn't integrated into a previous step.
->
-> Make sure and separate each prompt section. Use markdown. Each prompt should be tagged as text using code tags. The goal is to output prompts, but context, etc is important as well.
->
-> <SPEC>
+**Phase 4 — Commit.** Structured PR (see the `end-of-task-report` skill in Chapter 8) referencing the plan file.
 
-Save as `prompt_plan.md`. Then ask the same model: *"Can you make a `todo.md` that I can use as a checklist? Be thorough."*
+### The "one-sentence rule"
 
-You now have three files in the repo — `spec.md` describing the feature, `prompt_plan.md` describing how it decomposes into test-driven steps, `todo.md` as the execution checklist.
+A useful micro-practice from the [Plan Mode guide](https://codewithmukesh.com/blog/plan-mode-claude-code/): **if you can describe the required diff in one sentence, skip the plan. Otherwise, Plan Mode is mandatory.** That rule sets a clean cutoff between "alignment is overhead" and "alignment is the work." It's the practical answer to the critique that spec-first is too heavy for small changes.
 
-**Stage 3 — Execution.**
-Hand `prompt_plan.md` + `todo.md` to an execution agent (Aider, Cursor, Claude Code, Codex). The agent works through the checklist. Your involvement from here is complexity-triaged review, not implementation.
+### What this looks like historically
 
-The structural claim Reed's flow demonstrates: **requirement alignment produces three files, each with a distinct role, all living in the repo.** The conversations that produced them are disposable. The files are not.
+This shape did not appear from nowhere. Harper Reed's Feb 2025 post *[My LLM codegen workflow atm](https://harper.blog/2025/02/16/my-llm-codegen-workflow-atm/)* was the first widely-copied public write-up of the three-file pattern (`spec.md` + `prompt_plan.md` + `todo.md`). His prompts are still circulating and are structurally sound — they're the 2025 ancestors of the 2026 Plan Mode convention. If you want a runnable starting point for a tool that doesn't have Plan Mode built in, Reed's [original prompts](https://harper.blog/2025/02/16/my-llm-codegen-workflow-atm/) are a solid place to start; just know that the 2026 convention adds verification criteria and interface specification as mandatory elements Reed's original prompts underweighted.
 
-Addy Osmani's [*My LLM coding workflow going into 2026*](https://addyosmani.com/blog/ai-coding-workflow/) lands on nearly the same shape — his vocabulary is "spec → project plan → iterative refinement" — which is why I'm confident the pattern is structural rather than personal to Reed.
+The structural claim the Plan Mode / SDD consensus makes — and that I'm endorsing here — is: **requirement alignment produces a file with six specific elements, the agent's implementation is contractual against that file, and the file is a first-class repo artifact reviewed at complexity-triaged depth.**
 
 ## A second pattern worth stealing: specs-as-files
 
@@ -196,10 +190,10 @@ The `zero-review/auto-req` skill is the author's concrete encoding of the two te
 
 ## External voices
 
-- **Supporting — the architect/editor split**: Aider's *[Separating code reasoning and editing](https://aider.chat/2024/09/26/architect.html)* (2024) is the cleanest articulation of the "specify first, implement second" pattern in a production tool. The Aider team showed measurable benchmark gains by pairing a reasoning model (the *architect*) with an editor model, which is the same structural move this chapter advocates at the human-agent boundary. Configuration details are in the [chat modes docs](https://aider.chat/docs/usage/modes.html).
-- **Supporting — "plan-first" from inside Anthropic**: Boris Cherny's workflow, summarized in the [Educative recap](https://www.educative.io/newsletter/artificial-intelligence/claude-code-creators-workflow), describes using *Plan Mode* checkpoints to validate intent before execution — essentially the one-shot question-loop described in this chapter, wired into the tool. His [Lenny's interview](https://www.lennysnewsletter.com/p/head-of-claude-code-what-happens) repeats the point: humans design intent, agents execute and verify.
-- **Supporting — harness, don't prompt**: Mitchell Hashimoto in *[My AI Adoption Journey](https://mitchellh.com/writing/my-ai-adoption-journey)* reports that `AGENTS.md`-style constraint documents plus deterministic hooks matter more than any individual prompt. Requirement alignment, in his framing, is partly a document the agent reads and partly a harness that catches the classes of mistake documents can't.
-- **Challenging — "requirements change until they don't"**: Hillel Wayne's *[Requirements change until they don't](https://buttondown.com/hillelwayne/archive/requirements-change-until-they-dont/)* is the right push-back on spec-first purism — when the requirement is genuinely fluid, heavy up-front specification is expensive and often wrong. His point does not invalidate this chapter's technique; it tightens the scope: use the deepest alignment on the parts of the requirement you believe won't move, and keep the mobile parts light.
+- **Supporting — 2026 SDD consensus**: the [Augment Code Spec-Driven Development guide (April 2026)](https://www.augmentcode.com/guides/what-is-spec-driven-development) codifies the six-element spec and the spec-first / spec-anchored / spec-as-source rigor levels. The Jan 2026 paper of the [same name](https://arxiv.org/abs/2602.00180) is the academic companion.
+- **Supporting — Plan Mode as a tool primitive**: [*Plan Mode in Claude Code* (Feb 2026)](https://codewithmukesh.com/blog/plan-mode-claude-code/) and the [Get AI Perks complete guide (Mar 2026)](https://www.getaiperks.com/en/articles/claude-code-plan-mode) are the current how-tos. Plan Mode essentially turns the exhaustive-questioning loop of this chapter into a tool feature; if you're using Claude Code, use Plan Mode every time the change exceeds the one-sentence rule.
+- **Supporting — harness, don't prompt**: Mitchell Hashimoto in [*My AI Adoption Journey* (Feb 2026)](https://mitchellh.com/writing/my-ai-adoption-journey) reports that `AGENTS.md`-style constraint documents plus deterministic hooks matter more than any individual prompt. Requirement alignment, in his framing, is partly a document the agent reads and partly a harness that catches the classes of mistake documents can't.
+- **Challenging — "requirements change until they don't"**: Hillel Wayne's *[Requirements change until they don't](https://buttondown.com/hillelwayne/archive/requirements-change-until-they-dont/)* is the right push-back on spec-first purism — when the requirement is genuinely fluid, heavy up-front specification is expensive and often wrong. His point does not invalidate this chapter's technique; it tightens the scope: use the deepest alignment on the parts of the requirement you believe won't move, and keep the mobile parts light. The one-sentence rule above is one practical response to his critique.
 
 ## What's next
 
