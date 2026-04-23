@@ -1,0 +1,39 @@
+[book]
+title = "The Parallel Development Book"
+authors = ["Atum <https://atum.li>"]
+description = "How to run multiple AI agents in parallel without the quality collapsing — the break-in period, the three keys, the scheduling patterns, and the honest account of what it actually costs you."
+language = "en"
+multilingual = false
+src = "book"
+
+[build]
+build-dir = "_book"
+create-missing = false
+
+[output.html]
+default-theme = "light"
+preferred-dark-theme = "navy"
+git-repository-url = "https://github.com/A7um/ParallelDevelopmentBook"
+git-repository-icon = "fa-github"
+edit-url-template = "https://github.com/A7um/ParallelDevelopmentBook/edit/main/{path}"
+site-url = "/ParallelDevelopmentBook/"
+additional-css = ["theme/custom.css"]
+
+[output.html.fold]
+enable = true
+level = 1
+
+[output.html.playground]
+editable = false
+copyable = true
+
+[output.html.search]
+enable = true
+limit-results = 30
+teaser-word-count = 30
+use-boolean-and = true
+boost-title = 2
+boost-hierarchy = 1
+boost-paragraph = 1
+expand = true
+heading-split-level = 3
