@@ -1,13 +1,13 @@
 [book]
-title = "The Parallel Development Book"
+title = "并行开发：如何让多个 AI Agent 并行推进而质量不崩塌"
 authors = ["Atum <https://atum.li>"]
-description = "How to run multiple AI agents in parallel without the quality collapsing — the break-in period, the three keys, the scheduling patterns, and the honest account of what it actually costs you."
-language = "en"
+description = "如何让多个 AI 编程 Agent 并行工作而质量不崩塌 — 磨合期、三把钥匙、调度模式，以及你真正要付出的代价。"
+language = "zh-CN"
 multilingual = false
 src = "book"
 
 [build]
-build-dir = "_book"
+build-dir = "../_book/zh"
 create-missing = false
 
 [output.html]
@@ -15,10 +15,10 @@ default-theme = "light"
 preferred-dark-theme = "navy"
 git-repository-url = "https://github.com/A7um/ParallelDevelopmentBook"
 git-repository-icon = "fa-github"
-edit-url-template = "https://github.com/A7um/ParallelDevelopmentBook/edit/main/{path}"
-site-url = "/ParallelDevelopmentBook/"
-additional-css = ["theme/custom.css"]
-additional-js = ["theme/language-switcher.js"]
+edit-url-template = "https://github.com/A7um/ParallelDevelopmentBook/edit/main/zh/{path}"
+site-url = "/ParallelDevelopmentBook/zh/"
+additional-css = ["../theme/custom.css"]
+additional-js = ["../theme/language-switcher.js"]
 
 [output.html.fold]
 enable = true

@@ -6,7 +6,10 @@
 
 ## Read the Book
 
-**[book/README.md](book/README.md)**
+- **English**: [book/README.md](book/README.md)
+- **中文**: [zh/book/README.md](zh/book/README.md)
+
+The deployed site auto-hosts both editions side by side with a one-click language switcher in the top-right corner. English is served at the site root; Chinese is served under `/zh/`.
 
 ## What's Inside
 
